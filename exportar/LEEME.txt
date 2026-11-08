@@ -1,0 +1,2 @@
+Aquí deja Godot los juegos exportados (Proyecto > Exportar): una carpeta por plataforma.
+El archivo .gdignore hace que Godot no intente importar lo que hay en esta carpeta.

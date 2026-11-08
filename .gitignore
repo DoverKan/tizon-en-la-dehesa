@@ -1,0 +1,15 @@
+# Godot 4
+.godot/
+/android/
+
+# juegos exportados (se guardan las carpetas vacías, que Godot necesita que existan)
+exportar/*/*
+!exportar/*/.gitkeep
+
+# menú para subir y descargar los cambios de GitHub (solo para mi ordenador)
+github.bat
+github.ps1
+
+# sistema
+.DS_Store
+Thumbs.db

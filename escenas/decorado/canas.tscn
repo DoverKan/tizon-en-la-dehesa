@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/decorado/canas.png" id="1_mxm4g"]
+
+[node name="Canas" type="Sprite2D"]
+z_index = -1
+texture = ExtResource("1_mxm4g")
+centered = false
+offset = Vector2(0, -8)

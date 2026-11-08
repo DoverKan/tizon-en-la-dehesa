@@ -1,0 +1,312 @@
+{
+ "arcos": {
+  "3": [
+   4,
+   43
+  ],
+  "5": [
+   7,
+   43
+  ],
+  "6": [
+   0,
+   44
+  ],
+  "7": [
+   6,
+   44
+  ]
+ },
+ "suelo_fondo": {
+  "dehesa": "#93b25b",
+  "atardecer": "#76704c",
+  "ciudad": "#3a2a1e",
+  "rio": "#3d78a8",
+  "jardin": "#1e2a14",
+  "feria": "#120a18",
+  "cielo": "#b08068",
+  "romano": "#2e2418"
+ },
+ "mundos": [
+  {
+   "nombre": "MUNDO 1 · LA DEHESA Y BADAJOZ",
+   "nodos": [
+    [
+     46,
+     158
+    ],
+    [
+     116,
+     126
+    ],
+    [
+     190,
+     150
+    ],
+    [
+     262,
+     118
+    ],
+    [
+     336,
+     92
+    ]
+   ]
+  },
+  {
+   "nombre": "MUNDO 2 · DE BADAJOZ A MÉRIDA",
+   "nodos": [
+    [
+     44,
+     102
+    ],
+    [
+     110,
+     148
+    ],
+    [
+     186,
+     120
+    ],
+    [
+     258,
+     72
+    ],
+    [
+     338,
+     128
+    ]
+   ]
+  }
+ ],
+ "bestiario": [
+  {
+   "imagen": "00.png",
+   "nombre": "Tizón",
+   "papel": "Protagonista",
+   "texto": "Schnauzer mini. Corre, salta, da vueltas y lleva conchas en la boca."
+  },
+  {
+   "imagen": "01.png",
+   "nombre": "Huesito",
+   "papel": "Moneda",
+   "texto": "Cien huesitos dan una vida extra."
+  },
+  {
+   "imagen": "02.png",
+   "nombre": "Calcetín",
+   "papel": "Coleccionable",
+   "texto": "Cinco escondidos por nivel. Tizón los colecciona."
+  },
+  {
+   "imagen": "03.png",
+   "nombre": "Bloque colmena",
+   "papel": "Bloque sorpresa",
+   "texto": "Golpéalo desde abajo: huesito u objeto."
+  },
+  {
+   "imagen": "04.png",
+   "nombre": "Bloque de corcho",
+   "papel": "Ladrillo",
+   "texto": "Tizón grande lo rompe de un cabezazo."
+  },
+  {
+   "imagen": "05.png",
+   "nombre": "Galleta para perros",
+   "papel": "Crecer",
+   "texto": "Tizón se hace grande y aguanta un golpe."
+  },
+  {
+   "imagen": "06.png",
+   "nombre": "Zorongollo",
+   "papel": "Poder de fuego",
+   "texto": "Sale corriendo del bloque. Si lo pillas, Tizón escupe fuego con B."
+  },
+  {
+   "imagen": "07.png",
+   "nombre": "Disco volador",
+   "papel": "Poder de planeo",
+   "texto": "Mantén el salto y Tizón baja planeando."
+  },
+  {
+   "imagen": "08.png",
+   "nombre": "Encina hueca",
+   "papel": "Tubería",
+   "texto": "Algunas tienen pasadizo: ponte encima y pulsa ↓."
+  },
+  {
+   "imagen": "09.png",
+   "nombre": "Pelotero",
+   "papel": "Enemigo básico",
+   "texto": "Se aplasta saltando encima."
+  },
+  {
+   "imagen": "10.png",
+   "nombre": "Caracol",
+   "papel": "Enemigo con concha",
+   "texto": "Písalo y coge la concha con la boca."
+  },
+  {
+   "imagen": "11.png",
+   "nombre": "Cardo mordedor",
+   "papel": "Planta de la encina",
+   "texto": "No se pisa: usa la vuelta, el fuego o una concha."
+  },
+  {
+   "imagen": "12.png",
+   "nombre": "Abejorro",
+   "papel": "Enemigo volador",
+   "texto": "Vuela en ondas; también se pisa."
+  },
+  {
+   "imagen": "13.png",
+   "nombre": "Caseta",
+   "papel": "Punto de control",
+   "texto": "Si caes, vuelves a empezar aquí."
+  },
+  {
+   "imagen": "14.png",
+   "nombre": "Nido de cigüeña",
+   "papel": "Meta",
+   "texto": "Toca la rama móvil: cuanto más alto, más puntos."
+  },
+  {
+   "imagen": "15.png",
+   "nombre": "Vecinos",
+   "papel": "Badajoz",
+   "texto": "En Badajoz todo el mundo conoce a Tizón y le saluda al pasar."
+  },
+  {
+   "imagen": "16.png",
+   "nombre": "Eduardo",
+   "papel": "The Cereal Cafe",
+   "texto": "Espera a Tizón en la puerta del café. El nivel 1-3 está dedicado a él."
+  },
+  {
+   "imagen": "17.png",
+   "nombre": "Toldo",
+   "papel": "Badajoz",
+   "texto": "Rebota al caer encima; mantén el salto para subir hasta los tejados."
+  },
+  {
+   "imagen": "18.png",
+   "nombre": "Paloma",
+   "papel": "Badajoz",
+   "texto": "Picotea por la acera. Si la pisas, sale volando."
+  },
+  {
+   "imagen": "19.png",
+   "nombre": "Carpa",
+   "papel": "Guadiana",
+   "texto": "Salta del río cuando menos te lo esperas. Se puede pisar."
+  },
+  {
+   "imagen": "20.png",
+   "nombre": "Tronco",
+   "papel": "Guadiana",
+   "texto": "Flota, pero se hunde si te quedas quieto encima."
+  },
+  {
+   "imagen": "21.png",
+   "nombre": "Murciélago",
+   "papel": "Alcazaba",
+   "texto": "Cuelga del techo y se lanza en picado cuando pasas."
+  },
+  {
+   "imagen": "22.png",
+   "nombre": "Rastrillo",
+   "papel": "Alcazaba",
+   "texto": "Si pasas por debajo tiembla un momento y cae de golpe; luego sube despacio. Pasa sin pararte."
+  },
+  {
+   "imagen": "23.png",
+   "nombre": "Barra de fuego",
+   "papel": "Alcazaba",
+   "texto": "Gira sin parar alrededor de un bloque."
+  },
+  {
+   "imagen": "24.png",
+   "nombre": "Pinchos",
+   "papel": "Alcazaba",
+   "texto": "Pisarlos duele. Mejor saltar de piedra en piedra."
+  },
+  {
+   "imagen": "25.png",
+   "nombre": "Micifuz",
+   "papel": "Jefe del Mundo 1",
+   "texto": "El gato de la Torre de Espantaperros. Písale tres veces."
+  },
+  {
+   "imagen": "26.png",
+   "nombre": "Pelota de tenis",
+   "papel": "MEIAC",
+   "texto": "Tizón juega con ella en los jardines: se coge con la boca y se chuta contra los bichos."
+  },
+  {
+   "imagen": "27.png",
+   "nombre": "Aspersor",
+   "papel": "MEIAC",
+   "texto": "Cuando riega, el chorro lanza a Tizón hacia arriba."
+  },
+  {
+   "imagen": "28.png",
+   "nombre": "Interruptor de colores",
+   "papel": "MEIAC",
+   "texto": "Golpéalo desde abajo: cambia qué bloques de color son sólidos."
+  },
+  {
+   "imagen": "29.png",
+   "nombre": "Pato de la caseta de tiro",
+   "papel": "Feria",
+   "texto": "Va y viene por el mostrador. Písalo."
+  },
+  {
+   "imagen": "30.png",
+   "nombre": "Globo",
+   "papel": "Feria",
+   "texto": "Cógelo y Tizón sube despacio. Con ↓ lo sueltas."
+  },
+  {
+   "imagen": "31.png",
+   "nombre": "Noria",
+   "papel": "Feria",
+   "texto": "Sus cabinas dan la vuelta: súbete encima para llegar arriba."
+  },
+  {
+   "imagen": "32.png",
+   "nombre": "Luciérnaga",
+   "papel": "Cuevas",
+   "texto": "En la cueva casi no se ve. Cada luciérnaga que coges da más luz."
+  },
+  {
+   "imagen": "33.png",
+   "nombre": "Estalactita",
+   "papel": "Cuevas",
+   "texto": "Tiembla y cae cuando pasas por debajo."
+  },
+  {
+   "imagen": "34.png",
+   "nombre": "Cigüeña",
+   "papel": "Cielo",
+   "texto": "Vuela de un lado a otro: Tizón puede ir encima."
+  },
+  {
+   "imagen": "35.png",
+   "nombre": "Milano",
+   "papel": "Cielo",
+   "texto": "Vigila desde arriba y se lanza en picado. Se puede pisar."
+  },
+  {
+   "imagen": "36.png",
+   "nombre": "Piedra romana",
+   "papel": "Mérida",
+   "texto": "Se desmorona poco después de pisarla."
+  },
+  {
+   "imagen": "37.png",
+   "nombre": "La Urraca",
+   "papel": "Jefa del Mundo 2",
+   "texto": "Vuela por el Teatro Romano y se lanza en picado. Písala cuando se quede aturdida en el suelo."
+  }
+ ]
+}

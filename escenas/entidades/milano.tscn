@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/milano.gd" id="1_37pke"]
+[ext_resource type="Texture2D" path="res://assets/sprites/milano.png" id="2_oxtaw"]
+
+[node name="Milano" type="Node2D"]
+script = ExtResource("1_37pke")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -5)
+texture = ExtResource("2_oxtaw")
+hframes = 3

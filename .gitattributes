@@ -1,0 +1,6 @@
+# Normaliza los finales de línea de los archivos de texto
+* text=auto eol=lf
+
+# Los scripts de Windows necesitan finales de línea de Windows
+*.bat text eol=crlf
+*.ps1 text eol=crlf

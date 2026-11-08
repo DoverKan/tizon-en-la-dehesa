@@ -1,0 +1,83 @@
+# ============================================================================
+#  Tizón en la Dehesa
+#  Juego de plataformas al estilo de Super Mario World, hecho con Godot 4.
+#
+#  Archivo:  niveles/mapas/nivel_1_1.txt
+#  Qué es:   Mapa del nivel DEHESA 1-1 · LAS ENCINAS
+#  Autor:    Nacho Cano (DoverKan)
+#  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
+#  Versión:  1.0 (noviembre de 2026)
+#  © 2026 Nacho Cano
+# ============================================================================
+#
+# Leyenda (cada carácter es una casilla de 16x16):
+#   #  suelo (cambia según el tema de la zona)               B  bloque de corcho   H  colmena con huesito
+#   P  colmena: galleta o Zorongollo (si Tizón ya es grande)
+#   V  colmena: galleta o disco volador (si Tizón ya es grande)
+#   C  corcho con 8 huesitos S  piedra                      T  tronco de encina (2 de ancho)
+#   =  tablón (se atraviesa desde abajo; en Badajoz es un balcón)   o  huesito
+#   *  flores   %  matorral (2 de ancho)                     @  salida de Tizón
+#   e  pelotero   s  caracol   a  abejorro   c  cardo (encima del tronco, columna izquierda)
+#   F  calcetín   X  caseta (punto de control)   G  meta (poste de atrás)
+#   m  plataforma que va y viene   n  plataforma que sube y baja
+#   1-9  pasadizo: encima del tronco (columna izquierda); une los dos troncos con el mismo número
+# Alcazaba:
+#   ^  pinchos   i  antorcha   f  barra de fuego (gira alrededor de un bloque)
+#   K  rastrillo (32x30, cae al pasar por debajo)   b  murciélago (cuelga del techo)
+#   Z  Micifuz, el jefe   D  puerta que se cierra al empezar la pelea con el jefe
+# Badajoz y el Guadiana:
+#   W  fachada (decorado)   R  tejado (se pisa desde arriba)   w  toldo (rebota)
+#   l  farola   j  naranjo   u  banco   y  mesa de terraza   z  valla de obras
+#   ~  agua del Guadiana (si Tizón se mete, pierde una vida)   N  granito del puente   A  arco del puente
+#   k  cañas   p  paloma   h  vecino que saluda   E  Eduardo   Q  The Cereal Cafe (puerta en el centro)
+#   x  carpa (salta del agua)   q  tronco que flota y se hunde
+# Mundo 2:
+#   !  interruptor de colores   [  bloque rojo   ]  bloque azul (solo uno de los dos colores es sólido)
+#   Y  escultura   I  seto   |  columna romana   -  nube (se pisa desde arriba)   +  piedra que se desmorona
+#   :  guirnalda de bombillas   M  seta luminosa   J  aspersor   O  pelota de tenis   g  globo
+#   r  pato de la caseta de tiro   t  estalactita   L  luciérnaga   v  cigüeña (plataforma que vuela)
+#   d  milano   U  la Urraca, jefa del Mundo 2   $  centro de la noria (con seis cabinas)
+# Cada [zona nombre tema] es una zona; temas: dehesa, atardecer, cueva, castillo, ciudad, rio,
+#   jardin, museo, feria, gruta, cielo y romano.
+# «avance=0.6» hace que la zona principal avance sola (píxeles por fotograma).
+# Tras cambiar un mapa, vuelve a generar las escenas: Archivo > Ejecutar > tools/construir.gd
+# (o en terminal: godot --headless --path . --script res://tools/construir.gd)
+
+nombre=DEHESA 1-1
+subtitulo=LAS ENCINAS
+
+[zona principal dehesa]
+........................................................................................................................................................................................................................................
+........................................................................................................................................................................................................................................
+........................................................................................................................................................................................................................................
+........................................................................................................................................................................................................................................
+........................................................................................................................................................................................................................................
+.....................................H..F...................................................................F....................................................................F......................................................
+................................................................................................................a...........................................F...........................................................................
+...........................................................................................................oooo.....................................................................a...........................oo......................
+............................................................................c..............................====............................................................o.o.o.o.o.o..........................SS......................
+...........H.........BHC............BPBHB.............oo....................TT...ooo.................oooo........oooo....................BPB................S.....BVB.....................c....................SSS......................
+......................................................1.............TT......TT..o...o...2............====........====......................................SS...............m.............TT..................SSSS......................
+................oooo..................................TT............TT......TT..........TT...........................................................B....SSS.............................TT.................SSSSS......................
+...@...**....%............e...*...*...........e.e.....TT...*........TT..e...TT..........TT..*.....*........................X..*.....s.......e.e.e....B...SSSS....*..*.....................TT.*.....e....s...SSSSSS......G...........*...
+#################################################################################...################..................####################################################..............################################################
+#################################################################################...################..................####################################################..............################################################
+#################################################################################...################..................####################################################..............################################################
+
+[zona madriguera cueva]
+########################################
+########################################
+##....................................##
+##....................................##
+##....................................##
+##.......oooooo..........oooooo.......##
+##....................................##
+##......SSSSSSSS........SSSSSSSS......##
+##....................................##
+##.....................F..............##
+##.1..........oooo..............2.....##
+##.TT.........SSSS..............TT....##
+##.TT..ooooo.......e..ooooo.....TT....##
+########################################
+########################################
+########################################

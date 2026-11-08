@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/objeto.gd" id="1_0rytx"]
+[ext_resource type="Texture2D" path="res://assets/sprites/galleta.png" id="2_gwj7w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s6al5"]
+size = Vector2(14, 13)
+
+[node name="Objeto" type="CharacterBody2D"]
+script = ExtResource("1_0rytx")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
+texture = ExtResource("2_gwj7w")
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_s6al5")

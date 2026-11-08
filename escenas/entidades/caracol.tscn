@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/caracol.gd" id="1_2whmo"]
+[ext_resource type="Texture2D" path="res://assets/sprites/caracol.png" id="2_r4mcp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s8ay2"]
+size = Vector2(14, 14)
+
+[node name="Caracol" type="CharacterBody2D"]
+script = ExtResource("1_2whmo")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -7)
+texture = ExtResource("2_r4mcp")
+hframes = 3
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_s8ay2")

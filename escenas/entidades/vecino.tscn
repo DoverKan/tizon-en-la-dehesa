@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/vecino.gd" id="1_0d36t"]
+[ext_resource type="Texture2D" path="res://assets/sprites/vecinos.png" id="2_wh36t"]
+
+[node name="Vecino" type="Node2D"]
+script = ExtResource("1_0d36t")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -12)
+texture = ExtResource("2_wh36t")
+hframes = 2
+vframes = 4

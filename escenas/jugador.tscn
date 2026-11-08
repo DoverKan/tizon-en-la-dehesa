@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/tizon.gd" id="1_jpodt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tizon_pequeno.png" id="2_njcx7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xutah"]
+size = Vector2(12, 13)
+
+[node name="Tizon" type="CharacterBody2D"]
+script = ExtResource("1_jpodt")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(-8, -16)
+texture = ExtResource("2_njcx7")
+centered = false
+hframes = 5
+
+[node name="Forma" type="CollisionShape2D" parent="."]
+position = Vector2(0, -6.5)
+shape = SubResource("RectangleShape2D_xutah")

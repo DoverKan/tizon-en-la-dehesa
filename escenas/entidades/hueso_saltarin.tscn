@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/hueso_saltarin.gd" id="1_j7yq2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hueso.png" id="2_iqrxj"]
+
+[node name="HuesoSaltarin" type="Node2D"]
+script = ExtResource("1_j7yq2")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
+texture = ExtResource("2_iqrxj")
+hframes = 4

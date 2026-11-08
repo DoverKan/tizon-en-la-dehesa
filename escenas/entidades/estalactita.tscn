@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/estalactita.gd" id="1_8pijj"]
+[ext_resource type="Texture2D" path="res://assets/sprites/estalactita.png" id="2_o1grf"]
+
+[node name="Estalactita" type="Node2D"]
+script = ExtResource("1_8pijj")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
+texture = ExtResource("2_o1grf")

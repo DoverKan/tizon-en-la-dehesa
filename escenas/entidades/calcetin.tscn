@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/calcetin.gd" id="1_1imvk"]
+[ext_resource type="Texture2D" path="res://assets/sprites/calcetin.png" id="2_08yy1"]
+
+[node name="Calcetin" type="Node2D"]
+script = ExtResource("1_1imvk")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -7)
+texture = ExtResource("2_08yy1")

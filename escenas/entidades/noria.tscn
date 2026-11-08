@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/entidades/noria.gd" id="1_ndff5"]
+
+[node name="Noria" type="Node2D"]
+script = ExtResource("1_ndff5")
