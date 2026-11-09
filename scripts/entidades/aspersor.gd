@@ -12,7 +12,8 @@
 
 extends Pieza
 ## Aspersor de los jardines del MEIAC: descansa, echa un chorro que sube, riega
-## con fuerza y baja. Dentro del chorro Tizón sale disparado hacia arriba.
+## con fuerza y baja. Dentro del chorro Tizón sale disparado hacia arriba y
+## puede saltar como si estuviera en el suelo.
 ## El origen es el pie del aspersor, en el centro.
 
 const ALTO_CHORRO := 96.0
@@ -47,9 +48,12 @@ func paso(_delta: float) -> void:
 		var cj := j.caja()
 		var arriba := global_position.y - chorro
 		if cj.end.x > global_position.x - 5.0 and cj.position.x < global_position.x + 5.0 and cj.end.y > arriba and cj.end.y <= global_position.y + 2.0:
-			j.velocity.y = maxf(j.velocity.y - 54.0, -252.0)
+			# empuja hacia arriba sin frenar un salto que ya sube más deprisa,
+			# y dentro del chorro se puede saltar
+			if j.velocity.y > -252.0:
+				j.velocity.y = maxf(j.velocity.y - 54.0, -252.0)
 			j.en_suelo = false
-			j.coyote = 0
+			j.coyote = maxi(j.coyote, 2)
 	queue_redraw()
 
 

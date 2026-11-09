@@ -3916,19 +3916,19 @@ const LEVEL_MEIAC = {
       '................................',
       '................................',
       '..............ooo...............',
-      '.........ooo.......ooo..........',
-      '...............F................',
+      '.........ooo........ooo.........',
+      '................F...............',
       '................................',
       '................................',
       '................................',
-      '............J....J.......BHB....',
-      '............##...##.............',
-      '............##...##.............',
-      '............##...##.............',
-      '..X....J....##...##.......p.....',
-      '########....##...##....#########',
-      '########....##...##....#########',
-      '########....##...##....#########',
+      '.........................BHB....',
+      '..............J.....J...........',
+      '............###...###...........',
+      '............###...###...........',
+      '..X.....J...###...###.....p.....',
+      '#########...###...###..#########',
+      '#########...###...###..#########',
+      '#########...###...###..#########',
     ],
     [
       '........................NNNNNNNN',
@@ -5459,7 +5459,11 @@ const UPD = {
     if (c === 90 && onScreen(e, 0)) Sound.play('jet');
     if (e.lift > 8 && G.state === 'play') {
       const top = e.baseY - e.lift;
-      if (P.x + P.w > e.x && P.x < e.x + e.w && P.y + P.h > top && P.y + P.h <= e.baseY + 2) { P.vy = Math.max(P.vy - 0.9, -4.2); P.onGround = false; P.coyote = 0; }
+      if (P.x + P.w > e.x && P.x < e.x + e.w && P.y + P.h > top && P.y + P.h <= e.baseY + 2) {
+        // empuja hacia arriba sin frenar un salto que ya sube más deprisa, y dentro del chorro se puede saltar
+        if (P.vy > -4.2) P.vy = Math.max(P.vy - 0.9, -4.2);
+        P.onGround = false; P.coyote = Math.max(P.coyote, 2);
+      }
     }
   },
   globo(e) { e.y = e.baseY + Math.round(Math.sin(e.t * 0.05) * 2); },
@@ -7122,7 +7126,7 @@ function buildBestiary() {
     [A.spike, 'Pinchos', 'Alcazaba', 'Pisarlos duele. Mejor saltar de piedra en piedra.'],
     [A.cat.walkA[0], 'Micifuz', 'Jefe del Mundo 1', 'El gato de la Torre de Espantaperros. Písale tres veces.'],
     [tennisBall(0), 'Pelota de tenis', 'MEIAC', 'Tizón juega con ella en los jardines: se coge con la boca y se chuta contra los bichos.'],
-    [jetCanvas(), 'Aspersor', 'MEIAC', 'Cuando riega, el chorro lanza a Tizón hacia arriba.'],
+    [jetCanvas(), 'Aspersor', 'MEIAC', 'Cuando riega, el chorro lanza a Tizón hacia arriba. Desde dentro del chorro se puede saltar.'],
     [twoTiles(switchTile(0), colorBlock('r', true)), 'Interruptor de colores', 'MEIAC', 'Golpéalo desde abajo: cambia qué bloques de color son sólidos.'],
     [A.pato[0], 'Pato de la caseta de tiro', 'Feria', 'Va y viene por el mostrador. Písalo.'],
     [balloonImg(0), 'Globo', 'Feria', 'Cógelo y Tizón sube despacio. Con ↓ lo sueltas.'],

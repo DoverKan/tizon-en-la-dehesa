@@ -31,7 +31,7 @@ Entre nivel y nivel hay un **mapa del mundo**, desde el que también se pueden r
 
 **Mundo 2 · De Badajoz a Mérida**
 
-1. **MEIAC 2-1 · Los jardines del museo**: aspersores que lanzan hacia arriba y, dentro del museo, bloques rojos y azules que cambian con un interruptor.
+1. **MEIAC 2-1 · Los jardines del museo**: aspersores que lanzan hacia arriba (desde el chorro se puede saltar) y, dentro del museo, bloques rojos y azules que cambian con un interruptor.
 2. **Feria 2-2 · La Feria de San Juan**: una noria con cabinas que giran, globos para subir, patos de la caseta de tiro y fuegos artificiales.
 3. **Cuevas 2-3 · Fuentes de León**: todo está a oscuras; cada luciérnaga que coges da más luz.
 4. **Cigüeñas 2-4 · El vuelo de las cigüeñas**: la pantalla avanza sola y hay que ir de cigüeña en cigüeña sobre las nubes.
