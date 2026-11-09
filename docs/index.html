@@ -6022,6 +6022,8 @@ const NOMBRE_MAX = 8;
 const TECLADO = ['ABCDEFGHIJKLM', 'NÑOPQRSTUVWXY', 'Z0123456789.-'].map(f => f.split(''));
 const TECLAS = [{ k: 'esp', t: 'ESPACIO', c0: 0, c1: 2 }, { k: 'borra', t: 'BORRAR', c0: 3, c1: 5 }, { k: 'salir', t: 'SALIR', c0: 6, c1: 8 }, { k: 'ok', t: 'ACEPTAR', c0: 9, c1: 12 }];
 const TECLADO_X = 62, TECLADO_Y = 88, CELDA_W = 20, CELDA_H = 15;
+// columnas del ranking (desde el borde izquierdo de cada columna)
+const RK_PUESTO = 10, RK_NOMBRE = 17, RK_PUNTOS = 120, RK_NIVEL = 128, RK_CALCETINES = 176, RK_ANCHO = 176;
 const Ranking = {
   estado: 'nada', lista: [], puestos: 20,   // estado: nada, cargando, ok, error
   async pedir() {
@@ -6209,23 +6211,27 @@ function drawRanking() {
   else if (!Ranking.lista.length) centro('TODAVÍA NO HAY PUNTUACIONES. ¡SÉ EL PRIMERO!', 100);
   else {
     const COLOR_PUESTO = ['#ffd25e', '#d9dde6', '#e0a070'];
-    for (const col of Ranking.lista.length > 10 ? [0, 1] : [0]) {
-      const x = col ? 200 : 14;
-      drawText(ctx, 'NOMBRE', x + 18, 32, '#b2a283', 1, null);
-      drawText(ctx, 'PUNTOS', x + 116, 32, '#b2a283', 1, null, 'right');
-      drawText(ctx, 'NIVEL', x + 122, 32, '#b2a283', 1, null);
-      ctx.drawImage(A.sock, x + 156, 29);
+    // columnas: puesto, nombre, puntos, nivel y calcetines. Con 10 o menos, una sola columna centrada
+    const dos = Ranking.lista.length > 10;
+    const colX = c => dos ? (c ? 198 : 6) : Math.round((VW - RK_ANCHO) / 2);
+    for (const c of dos ? [0, 1] : [0]) {
+      const x = colX(c);
+      drawText(ctx, 'NOMBRE', x + RK_NOMBRE, 32, '#b2a283', 1, null);
+      drawText(ctx, 'PUNTOS', x + RK_PUNTOS, 32, '#b2a283', 1, null, 'right');
+      drawText(ctx, 'NIVEL', x + RK_NIVEL, 32, '#b2a283', 1, null);
+      ctx.drawImage(A.sock, x + RK_CALCETINES - A.sock.width, 29);
     }
     Ranking.lista.slice(0, 20).forEach((r, i) => {
-      const x = i < 10 ? 14 : 200, y = 46 + (i % 10) * 13;
-      const yo = v.nombre && r.nombre === v.nombre;
-      if (yo && ((G.t >> 4) & 1)) { ctx.fillStyle = 'rgba(242,182,50,0.18)'; ctx.fillRect(x - 4, y - 3, 182, 13); }
+      const x = colX(i < 10 ? 0 : 1), y = 46 + (i % 10) * 13;
+      // recién enviada: solo esa partida; si no, todas las de tu nombre
+      const yo = v.posicion ? r.pos === v.posicion : (v.nombre && r.nombre === v.nombre);
+      if (yo && ((G.t >> 4) & 1)) { ctx.fillStyle = 'rgba(242,182,50,0.18)'; ctx.fillRect(x - 4, y - 3, RK_ANCHO + 8, 13); }
       const col = yo ? '#ffd25e' : '#fbf0da';
-      drawText(ctx, String(r.pos), x + 10, y, COLOR_PUESTO[i] || '#b2a283', 1, null, 'right');
-      drawText(ctx, r.nombre, x + 18, y, col, 1, null);
-      drawText(ctx, String(r.puntos).padStart(7, '0'), x + 116, y, col, 1, null, 'right');
-      drawText(ctx, r.final ? 'FIN' : Math.ceil(r.nivel / 5) + '-' + ((r.nivel - 1) % 5 + 1), x + 122, y, col, 1, null);
-      drawText(ctx, String(r.calcetines), x + 174, y, col, 1, null, 'right');
+      drawText(ctx, String(r.pos), x + RK_PUESTO, y, COLOR_PUESTO[i] || '#b2a283', 1, null, 'right');
+      drawText(ctx, r.nombre, x + RK_NOMBRE, y, col, 1, null);
+      drawText(ctx, String(r.puntos).padStart(7, '0'), x + RK_PUNTOS, y, col, 1, null, 'right');
+      drawText(ctx, r.final ? 'FIN' : Math.ceil(r.nivel / 5) + '-' + ((r.nivel - 1) % 5 + 1), x + RK_NIVEL, y, col, 1, null);
+      drawText(ctx, String(r.calcetines), x + RK_CALCETINES, y, col, 1, null, 'right');
     });
   }
   if (v.posicion) centro(v.posicion <= 20 ? '¡ESTÁS EN EL PUESTO ' + v.posicion + '!' : 'ESTÁS EN EL PUESTO ' + v.posicion, 182, '#ffd25e');

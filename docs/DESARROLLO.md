@@ -84,12 +84,12 @@ El código guarda hasta 63 vidas y 1.048.575 puntos; por encima de eso se queda 
 
 ## Ranking de jugadores
 
-Al acabar la partida (fin de partida o tras vencer a la Urraca), si la puntuación entra entre las 20 mejores, el juego pide un nombre de hasta 8 letras con un teclado en pantalla, como en las recreativas. Se maneja con la cruceta y A, tocando las letras o escribiendo con el teclado. En el menú de inicio, **Ranking** enseña los 20 mejores, con una sola puntuación (la mejor) por nombre.
+Al acabar la partida (fin de partida o tras vencer a la Urraca), si la puntuación entra entre las 20 mejores, el juego pide un nombre de hasta 8 letras con un teclado en pantalla, como en las recreativas. Se maneja con la cruceta y A, tocando las letras o escribiendo con el teclado. En el menú de inicio, **Ranking** enseña las 20 mejores puntuaciones; como en las recreativas, un mismo nombre puede salir varias veces.
 
 - Lo hace `scripts/ranking.gd`; las pantallas están en `principal.gd` (estados `nombre` y `ranking`) y en `pantalla.gd`.
 - Habla con la misma API que la versión web: `https://www.doverkan.com/tizon_ranking/api.php`.
   - `GET` devuelve `{"ok":true,"puestos":20,"ranking":[{"pos":1,"nombre":"NACHO","puntos":98500,"nivel":10,"final":true,"calcetines":41}]}`.
-  - `POST` con `{"nombre","puntos","nivel","final","calcetines","segundos","plataforma"}` guarda la puntuación y devuelve el ranking y el puesto.
+  - `POST` con `{"nombre","puntos","nivel","final","calcetines","segundos","plataforma"}` guarda la puntuación y devuelve el ranking y el puesto. Al volver, se resalta solo esa partida; desde el menú se resaltan todas las del último nombre usado.
 - Con la puntuación se envían el nivel más lejano, los calcetines y el tiempo jugado, que se guarda en la partida. El servidor rechaza lo que no se puede conseguir jugando: demasiados puntos para el tiempo jugado, más calcetines de los que hay en los niveles alcanzados...
 - Las partidas cargadas con un código de partida no entran en el ranking: el código lleva los puntos dentro y cualquiera podría fabricarse uno.
 - En Android hace falta el permiso de internet; ya está activado en el preajuste.

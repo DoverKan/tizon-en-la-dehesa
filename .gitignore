@@ -6,9 +6,10 @@
 exportar/*/*
 !exportar/*/.gitkeep
 
-# menú para subir y descargar los cambios de GitHub (solo para mi ordenador)
+# menús para subir y descargar los cambios de GitHub, de Windows y de Mac (solo para mi ordenador)
 github.bat
 github.ps1
+github.command
 
 # sistema
 .DS_Store

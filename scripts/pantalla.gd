@@ -27,6 +27,13 @@ var principal: Node = null
 var _losetas: Texture2D = preload("res://assets/tiles/losetas.png")
 var _grande: Texture2D = preload("res://assets/sprites/tizon_grande_normal.png")
 var _pequeno: Texture2D = preload("res://assets/sprites/tizon_pequeno.png")
+# columnas del ranking (desde el borde izquierdo de cada columna)
+const RK_PUESTO := 10.0
+const RK_NOMBRE := 17.0
+const RK_PUNTOS := 120.0
+const RK_NIVEL := 128.0
+const RK_CALCETINES := 176.0
+const RK_ANCHO := 176.0
 var _calcetin: Texture2D = preload("res://assets/sprites/calcetin.png")
 var _zoro: Texture2D = preload("res://assets/sprites/zorongollo.png")
 var _pelotero: Texture2D = preload("res://assets/sprites/pelotero.png")
@@ -468,27 +475,31 @@ func _ranking(t: int) -> void:
 		_centro("TODAVÍA NO HAY PUNTUACIONES. ¡SÉ EL PRIMERO!", 100, CREMA, 1, FuentePixel.SIN_SOMBRA)
 	else:
 		var gris := Color("b2a283")
-		for col in ([0, 1] if r.lista.size() > 10 else [0]):
-			var x := 200.0 if col == 1 else 14.0
-			FuentePixel.dibujar(self, "NOMBRE", Vector2(x + 18, 32), gris, 1, FuentePixel.SIN_SOMBRA)
-			FuentePixel.dibujar(self, "PUNTOS", Vector2(x + 116, 32), gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
-			FuentePixel.dibujar(self, "NIVEL", Vector2(x + 122, 32), gris, 1, FuentePixel.SIN_SOMBRA)
-			draw_texture(_calcetin, Vector2(x + 156, 29))
+		# columnas: puesto, nombre, puntos, nivel y calcetines. Con 10 o menos, una sola columna centrada
+		var dos: bool = r.lista.size() > 10
+		var x_unica := roundf((VW - RK_ANCHO) / 2.0)
+		for col in ([0, 1] if dos else [0]):
+			var x: float = (198.0 if col == 1 else 6.0) if dos else x_unica
+			FuentePixel.dibujar(self, "NOMBRE", Vector2(x + RK_NOMBRE, 32), gris, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, "PUNTOS", Vector2(x + RK_PUNTOS, 32), gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, "NIVEL", Vector2(x + RK_NIVEL, 32), gris, 1, FuentePixel.SIN_SOMBRA)
+			draw_texture(_calcetin, Vector2(x + RK_CALCETINES - _calcetin.get_width(), 29))
 		var colores := [AMARILLO, Color("d9dde6"), Color("e0a070")]
 		for i in mini(20, r.lista.size()):
 			var f: Dictionary = r.lista[i]
-			var x := 14.0 if i < 10 else 200.0
+			var x: float = (6.0 if i < 10 else 198.0) if dos else x_unica
 			var y := 46.0 + (i % 10) * 13
-			var yo: bool = p.ranking_nombre != "" and f.nombre == p.ranking_nombre
+			# recién enviada: solo esa partida; si no, todas las de tu nombre
+			var yo: bool = f.pos == p.ranking_puesto if p.ranking_puesto > 0 else (p.ranking_nombre != "" and f.nombre == p.ranking_nombre)
 			if yo and ((t >> 4) & 1) != 0:
-				draw_rect(Rect2(x - 4, y - 3, 182, 13), Color(ORO, 0.18))
+				draw_rect(Rect2(x - 4, y - 3, RK_ANCHO + 8, 13), Color(ORO, 0.18))
 			var c := AMARILLO if yo else CREMA
-			FuentePixel.dibujar(self, str(f.pos), Vector2(x + 10, y), colores[i] if i < 3 else gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
-			FuentePixel.dibujar(self, f.nombre, Vector2(x + 18, y), c, 1, FuentePixel.SIN_SOMBRA)
-			FuentePixel.dibujar(self, "%07d" % f.puntos, Vector2(x + 116, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, str(f.pos), Vector2(x + RK_PUESTO, y), colores[i] if i < 3 else gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, f.nombre, Vector2(x + RK_NOMBRE, y), c, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, "%07d" % f.puntos, Vector2(x + RK_PUNTOS, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
 			var nv: int = f.nivel
-			FuentePixel.dibujar(self, "FIN" if f.final else "%d-%d" % [(nv - 1) / 5 + 1, (nv - 1) % 5 + 1], Vector2(x + 122, y), c, 1, FuentePixel.SIN_SOMBRA)
-			FuentePixel.dibujar(self, str(f.calcetines), Vector2(x + 174, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, "FIN" if f.final else "%d-%d" % [(nv - 1) / 5 + 1, (nv - 1) % 5 + 1], Vector2(x + RK_NIVEL, y), c, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, str(f.calcetines), Vector2(x + RK_CALCETINES, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
 	if p.ranking_puesto > 0:
 		_centro(("¡ESTÁS EN EL PUESTO %d!" if p.ranking_puesto <= 20 else "ESTÁS EN EL PUESTO %d") % p.ranking_puesto, 182, AMARILLO, 1, FuentePixel.SIN_SOMBRA)
 	if p.temporizador > 20 and ((t >> 5) & 1) != 0:
