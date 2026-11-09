@@ -673,9 +673,11 @@ func intentar_pasadizo(j: Tizon) -> bool:
 			j.velocity = Vector2.ZERO
 			j.girando = false
 			j.global_position.x = e.global_position.x
-			j.z_index = -1
+			var es_puerta: bool = e.get("puerta") == true
+			if not es_puerta:
+				j.z_index = -1
 			estado = "pasadizo"
-			pasadizo = {"fase": "entra", "t": 0, "boca": e.global_position.y, "destino": destino}
+			pasadizo = {"fase": "entra", "t": 0, "boca": e.global_position.y, "destino": destino, "puerta": es_puerta}
 			Sonido.tocar("pasadizo")
 			return true
 	return false
@@ -688,8 +690,35 @@ func _otro_pasadizo(p: Node2D) -> Node2D:
 	return null
 
 
+## Oscuridad del fundido al cruzar la puerta secreta (0 nada, 1 negro)
+func fundido() -> float:
+	if estado != "pasadizo" or not pasadizo.get("puerta", false):
+		return 0.0
+	return clampf((pasadizo.t if pasadizo.fase == "entra" else 24 - pasadizo.t) / 24.0, 0.0, 1.0)
+
+
 func _paso_pasadizo() -> void:
 	pasadizo.t += 1
+	if pasadizo.get("puerta", false):
+		# puerta: fundido a negro, cambio de zona y fundido de vuelta
+		if pasadizo.fase == "entra" and pasadizo.t >= 24:
+			var d: Node2D = pasadizo.destino
+			jugador.global_position = d.global_position
+			jugador.velocity = Vector2.ZERO
+			jugador.mirando = 1
+			zona_actual = zona_de(d.global_position)
+			for e in entidades.get_children():
+				if e.get("activo") != null and e.get("tipo") not in SIEMPRE_ACTIVOS:
+					e.activo = false
+			pasadizo.fase = "sale"
+			pasadizo.t = 0
+			_mover_camara(true)
+		elif pasadizo.fase == "sale" and pasadizo.t >= 24:
+			jugador.en_suelo = true
+			jugador.bloqueo_abajo = true
+			estado = "jugando"
+		_mover_camara(false)
+		return
 	if pasadizo.fase == "entra":
 		jugador.position.y += 0.55
 		if jugador.position.y > pasadizo.boca + jugador.alto() + 4.0:

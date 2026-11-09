@@ -114,6 +114,8 @@ func _pistas_pasadizo() -> void:
 		var top: float = e.global_position.y
 		if cx < nivel.cam.x - 32.0 or cx > nivel.cam.x + 384.0 + 32.0:
 			continue
+		if e.get("puerta") == true:
+			continue        # la puerta secreta no avisa (se dibuja ella misma, detrás de Tizón)
 		var tx := int((cx - 16.0) / 16.0)
 		for k in 3:
 			var ph := (f + k * 17 + tx * 7) % 48

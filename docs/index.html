@@ -3153,7 +3153,7 @@ const LEVEL_1 = {
 const TILE_CODES = { '#': 1, 'B': 2, 'H': 3, 'P': 4, 'V': 5, 'S': 7, 'T': 8, '=': 9, 'o': 10, '*': 11, '%': 12, 'C': 13, '^': 14, 'i': 15,
   'W': 16, 'R': 17, 'w': 18, 'l': 19, 'j': 20, 'u': 21, 'y': 22, 'z': 23, '~': 24, 'N': 25, 'A': 26, 'k': 27,
   '!': 28, '[': 29, ']': 30, 'Y': 31, 'I': 32, '|': 33, '-': 34, '+': 35, ':': 36, 'M': 37 };
-const ENT_CODES = 'escaFXGmn@fKbZDphEQxqJOgrtLvdU$';
+const ENT_CODES = 'escaFXGmn@fKbZDphEQxqJOgrtLvdU$?';
 const TL = { EMPTY: 0, GROUND: 1, CORK: 2, HONEY: 3, HONEY_P: 4, HONEY_V: 5, USED: 6, STONE: 7, TRUNK: 8, PLANK: 9, COIN: 10, FLOWER: 11, BUSH: 12, CORK_MULTI: 13, SPIKE: 14, TORCH: 15,
   WALL: 16, ROOF: 17, AWNING: 18, LAMP: 19, ORANGE: 20, BENCH: 21, TABLE: 22, FENCE: 23, WATER: 24, GRANITE: 25, ARCH: 26, REEDS: 27,
   SWITCH: 28, RED: 29, BLUE: 30, SCULPT: 31, HEDGE: 32, COLUMN: 33, CLOUD: 34, CRUMBLE: 35, GARLAND: 36, MUSH: 37 };
@@ -3181,10 +3181,11 @@ function parseArea(name, def, warnings) {
     if (TILE_CODES[ch] != null) tiles[y * W + x] = TILE_CODES[ch];
     else if (ch === '@') start = { tx: x, ty: y };
     else if (ch >= '1' && ch <= '9') warps.push({ d: ch, area: name, tx: x, ty: y + 1 });
+    else if (ch === '&') warps.push({ d: '&', area: name, tx: x, ty: y + 1, puerta: true });   // puerta (2 de ancho, 3 de alto)
     else if (ENT_CODES.includes(ch)) { ents.push({ k: ch, tx: x, ty: y }); if (ch === 'f') tiles[y * W + x] = TL.USED; if (ch === 'x' || ch === 'q') tiles[y * W + x] = TL.WATER; }
   }
   for (let y = 0; y < H; y++) { let run = 0; for (let x = 0; x < W; x++) { if (tiles[y * W + x] === TL.TRUNK) { tvar[y * W + x] = run % 2; run++; } else run = 0; } }
-  for (const w of warps) if (tiles[w.ty * W + w.tx] !== TL.TRUNK) warnings.push(`${name}: el pasadizo ${w.d} no está encima de un tronco`);
+  for (const w of warps) if (!w.puerta && tiles[w.ty * W + w.tx] !== TL.TRUNK) warnings.push(`${name}: el pasadizo ${w.d} no está encima de un tronco`);
   return { name, theme: def.theme, w: W, h: H, tiles, tvar, ents, warps, start };
 }
 function parseLevel(def) {
@@ -3509,6 +3510,7 @@ const LEVEL_3 = {
 //   p  paloma   h  vecino que saluda a Tizón   E  Eduardo   Q  fachada de The Cereal Cafe
 //   ~  agua del Guadiana   N  granito del Puente de Palmas   A  arco del puente   k  cañas
 //   q  tronco que se hunde si te quedas encima   x  carpa que salta del agua
+//   &  puerta secreta (se entra agachándose)   ?  retrato de Tizón con su placa
 // ============================================================
 const LEVEL_BADAJOZ = {
   name: 'BADAJOZ 1-3',
@@ -3583,7 +3585,7 @@ const LEVEL_BADAJOZ = {
       '..............WWW===WWWWWWW.....',
       '..............WWWWWWWWWWWWW.....',
       '..............WWWWWWWwwwWWW.....',
-      '..l.....h.....WWWWWWWWWWWWWp....',
+      '..l.....h.....WWW&WWWWWWWWWp....',
       '################################',
       '################################',
       '################################',
@@ -3679,6 +3681,26 @@ const LEVEL_BADAJOZ = {
       '########################################',
       '########################################',
       '########################################',
+    ],
+  ] },
+  secreta: { theme: 'museo', segments: [
+    [
+      '##########################',
+      '##########################',
+      '##......................##',
+      '##......................##',
+      '##..........?...........##',
+      '##......................##',
+      '##......................##',
+      '##......................##',
+      '##......................##',
+      '##......................##',
+      '##....o.o.o.o.o.o.o.....##',
+      '##......................##',
+      '##.&....................##',
+      '##########################',
+      '##########################',
+      '##########################',
     ],
   ] },
   },
@@ -4946,6 +4968,7 @@ function spawnArea(def) {
       case 'p': E.push(mkEnt('paloma', x + 2, y + 6, 12, 10)); break;
       case 'h': E.push(mkEnt('vecino', x + 4, y + T - 22, 8, 22, { v: nVec % 4, msg: saludos[nVec % saludos.length], active: true, said: 0, talk: 0 })); nVec++; break;
       case 'E': E.push(mkEnt('eduardo', x + 4, y + T - 22, 8, 22, { active: true, said: 0, talk: 0, lines: [] })); break;
+      case '?': E.push(mkEnt('cuadro', x + 16 - 28, y, 56, 72, { back: true, active: true })); break;
       case 'Q': E.push(mkEnt('cafe', x, y + T - 112, 144, 112, { doorX: x + 72, back: true, active: true })); break;
       case 'x': E.push(mkEnt('carpa', x + 2, y + 6, 12, 16, { baseY: y + 6, st: 'wait', timer: 40 + (d.tx * 37) % 90 })); break;
       case 'q': {
@@ -5004,8 +5027,9 @@ function tryWarp() {
     if (w.ty === ty && w.dst && Math.abs(cx - (w.tx * T + 16)) <= 8) {
       P.duck = false; updateHeight(); P.vx = 0; P.vy = 0; P.spinning = false;
       P.x = w.tx * T + 16 - P.w / 2;
-      G.state = 'warp'; G.warp = { phase: 'in', t: 0, top: w.ty * T, dst: w.dst };
+      G.state = 'warp'; G.warp = { phase: 'in', t: 0, top: w.ty * T, dst: w.dst, puerta: !!w.puerta };
       Sound.play('warp');
+      if (w.puerta && w.area === 'main') analitica('huevo_encontrado', { huevo: 'sala secreta' });
       return true;
     }
   }
@@ -5013,6 +5037,16 @@ function tryWarp() {
 }
 function updateWarp() {
   const w = G.warp; w.t++;
+  if (w.puerta) {
+    // puerta: fundido a negro, cambio de zona y fundido de vuelta
+    if (w.phase === 'in' && w.t >= 24) {
+      switchArea(w.dst.area);
+      P.x = w.dst.tx * T + 16 - P.w / 2; P.y = w.dst.ty * T - P.h; P.facing = 1; P.onGround = true;
+      w.phase = 'out'; w.t = 0; updateCamera(true);
+    } else if (w.phase === 'out' && w.t >= 24) { P.downLock = true; G.state = 'play'; G.warp = null; }
+    updateParts(); updateCamera();
+    return;
+  }
   if (w.phase === 'in') {
     P.y += 0.55;
     if (P.y > w.top + 4) {
@@ -5129,10 +5163,10 @@ function updateCrumbles() {
     } else G.crumbles.set(k, t + 1);
   }
 }
-function hurt() {
+function hurt(causa) {
   if (P.inv > 0 || G.state !== 'play') return;
   if (P.balloon) popBalloon();
-  if (P.power === 0) return die();
+  if (P.power === 0) return die(causa);
   Sound.play('powerdown');
   const np = P.power >= 2 ? 1 : 0;
   P.transform = { from: P.power, to: np }; G.freeze = 36;
@@ -5140,8 +5174,9 @@ function hurt() {
   dropCarry();
 }
 function dropCarry() { if (P.carry) { P.carry.carried = false; P.carry.kicked = false; P.carry.vx = 0; P.carry = null; } }
-function die() {
+function die(causa) {
   if (G.state !== 'play') return;
+  analiticaMuerte(causa);
   P.balloon = null;
   G.state = 'dying'; G.timer = 0; P.dead = true; P.vx = 0; P.vy = 0; P.inv = 0;
   dropCarry();
@@ -5291,20 +5326,20 @@ function updatePlayer() {
     if (P.x < camX) {
       P.x = camX; if (P.vx < 0) P.vx = 0;
       const tx = Math.floor((P.x + P.w - 0.01) / T), ty0 = Math.floor(P.y / T), ty1 = Math.floor((P.y + P.h - 0.01) / T);
-      for (let ty = ty0; ty <= ty1; ty++) if (isSolid(tx, ty) && G.state === 'play') { die(); return; }
+      for (let ty = ty0; ty <= ty1; ty++) if (isSolid(tx, ty) && G.state === 'play') { die('aplastado'); return; }
     }
     if (P.x + P.w > camX + VW) P.x = camX + VW - P.w;
   }
   // El Guadiana: Tizón no sabe nadar contra la corriente
   if (G.state === 'play') {
     const sy = waterSurface(Math.floor((P.x + P.w / 2) / T), Math.floor((P.y + P.h) / T));
-    if (sy >= 0 && P.y + P.h > sy + 6) { splash(P.x + P.w / 2, sy); die(); return; }
+    if (sy >= 0 && P.y + P.h > sy + 6) { splash(P.x + P.w / 2, sy); die('agua'); return; }
   }
 
   // Pinchos: hacen daño si Tizón se mete en la mitad de abajo de la casilla
   {
     const ax = Math.floor(P.x / T), bx = Math.floor((P.x + P.w - 0.01) / T), by = Math.floor((P.y + P.h - 0.01) / T);
-    for (let tx = ax; tx <= bx; tx++) if (tileAt(tx, by) === TL.SPIKE && P.y + P.h > by * T + 7) { hurt(); break; }
+    for (let tx = ax; tx <= bx; tx++) if (tileAt(tx, by) === TL.SPIKE && P.y + P.h > by * T + 7) { hurt('pinchos'); break; }
   }
   // Huesitos sueltos
   const lx = Math.floor(P.x / T), rx = Math.floor((P.x + P.w - 0.01) / T), ty0 = Math.floor(P.y / T), ty1 = Math.floor((P.y + P.h - 0.01) / T);
@@ -5343,7 +5378,7 @@ function updatePlayer() {
 
   if (P.inv > 0) P.inv--;
   if (P.onGround) P.anim += Math.abs(P.vx) * 0.09 + (Math.abs(P.vx) > 0.1 ? 0.03 : 0);
-  if (P.y > L.h * T + 8) die();
+  if (P.y > L.h * T + 8) die('caída');
 }
 
 // ============================================================
@@ -5414,6 +5449,7 @@ const UPD = {
     else if (e.lines.length) { e.msg = e.lines.shift(); e.talk = 110; }
   },
   cafe() { },
+  cuadro() { },
   noria(e) { e.ang += Math.PI * 2 / 720; },
   jet(e) {
     // aspersor: pausa, chorro que sube, chorro fuerte y baja; dentro del chorro Tizón sale disparado
@@ -5679,11 +5715,11 @@ function interact() {
       case 'firebar':
         for (let i = 1; i <= e.n; i++) {
           const bx = e.cx + Math.cos(e.ang) * i * 8, by = e.cy + Math.sin(e.ang) * i * 8;
-          if (overlap(P, { x: bx - 3, y: by - 3, w: 6, h: 6 })) { hurt(); break; }
+          if (overlap(P, { x: bx - 3, y: by - 3, w: 6, h: 6 })) { hurt('firebar'); break; }
         }
         break;
       case 'gate':
-        if (hit && overlap({ x: P.x + 1, y: P.y + 1, w: P.w - 2, h: P.h - 2 }, { x: e.x + 2, y: e.y, w: e.w - 4, h: e.h })) hurt();
+        if (hit && overlap({ x: P.x + 1, y: P.y + 1, w: P.w - 2, h: P.h - 2 }, { x: e.x + 2, y: e.y, w: e.w - 4, h: e.h })) hurt('gate');
         break;
       case 'cat':
         if (!hit || e.st === 'wait' || e.st === 'dead') break;
@@ -5692,12 +5728,12 @@ function interact() {
           addScore(e.hp > 0 ? 1000 : 5000, e.x + 6, e.y - 8);
           if (e.hp <= 0) { e.st = 'dead'; e.timer = 0; e.vy = -4; e.vx = P.facing * 0.6; Sound.play('meow'); Sound.musicStop(); }
           else { e.st = 'hurt'; e.timer = 0; e.vx = (e.x + e.w / 2 < P.x + P.w / 2 ? -1 : 1) * 2.2; }
-        } else if (e.st !== 'hurt') hurt();
+        } else if (e.st !== 'hurt') hurt('cat');
         break;
       case 'paloma':
         if (!hit) break;
         if (stomped(e)) { flyAway(e, P.facing); stompScore(e.x, e.y); bounce(P.spinning); Sound.play('stomp'); }
-        else hurt();
+        else hurt('paloma');
         break;
       case 'carpa':
         if (!hit || e.st === 'wait') break;
@@ -5705,13 +5741,13 @@ function interact() {
           if (P.spinning) { killPoof(e); bounce(true); addScore(200, e.x, e.y); }
           else { killFlip(e, P.facing); stompScore(e.x, e.y); bounce(); }
           Sound.play('stomp');
-        } else hurt();
+        } else hurt('carpa');
         break;
       case 'globo':
         // el globo se coge tocando el globo o la cuerda, que llega casi al suelo
         if (!P.balloon && !P.carry && overlap(P, { x: e.x + 2, y: e.y, w: e.w - 4, h: 30 })) { e.alive = false; P.balloon = { t: 330, c: e.c }; P.spinning = false; Sound.play('tick'); }
         break;
-      case 'estalactita': if (hit) hurt(); break;
+      case 'estalactita': if (hit) hurt('estalactita'); break;
       case 'luciernaga':
         if (!e.got && overlap(P, { x: e.x - 5, y: e.y - 5, w: 14, h: 14 })) { e.got = true; e.slot = G.flies; G.flies = Math.min(4, G.flies + 1); addScore(100, e.x, e.y - 6); Sound.play('chime'); }
         break;
@@ -5723,7 +5759,7 @@ function interact() {
           if (e.hp <= 0) { e.st = 'dead'; e.timer = 0; e.vy = -4; e.vx = P.facing * 0.6; Sound.play('caw'); Sound.musicStop(); }
           else { e.st = 'hurt'; e.timer = 0; }
         } else if (stomped(e)) bounce();       // volando no le hace nada: Tizón rebota
-        else hurt();
+        else hurt('urraca');
         break;
       case 'beetle': case 'bee': case 'bat': case 'pato': case 'milano':
         if (!hit) break;
@@ -5731,14 +5767,14 @@ function interact() {
           if (P.spinning) { killPoof(e); bounce(true); Sound.play('stomp'); addScore(200, e.x, e.y); }
           else if (e.type === 'beetle') { e.dying = 'flat'; e.timer = 30; stompScore(e.x, e.y); bounce(); Sound.play('stomp'); }
           else { killFlip(e, P.facing); stompScore(e.x, e.y); bounce(); Sound.play('stomp'); }
-        } else hurt();
+        } else hurt(e.type);
         break;
       case 'snail':
         if (!hit) break;
         if (stomped(e)) {
           if (P.spinning) { killPoof(e); bounce(true); addScore(200, e.x, e.y); Sound.play('stomp'); }
           else { e.type = 'shell'; e.h = 13; e.y += 1; e.kicked = false; e.vx = 0; e.idleT = 0; e.grace = 8; stompScore(e.x, e.y); bounce(); Sound.play('stomp'); }
-        } else hurt();
+        } else hurt('snail');
         break;
       case 'shell':
         if (!hit || e.carried) break;
@@ -5753,12 +5789,12 @@ function interact() {
           if (P.spinning) { killPoof(e); bounce(true); }
           else { e.kicked = false; e.vx = 0; e.grace = 10; e.idleT = 0; bounce(); stompScore(e.x, e.y); }
           Sound.play('stomp');
-        } else if (e.grace <= 0) hurt();
+        } else if (e.grace <= 0) hurt('shell');
         break;
       case 'thistle':
         if (!hit || e.out < 6) break;
         if (P.spinning && stomped(e)) { killPoof(e); bounce(true); Sound.play('stomp'); addScore(400, e.x, e.y - 10); }
-        else hurt();
+        else hurt('thistle');
         break;
       case 'galleta': if (hit && !e.emergeT) { e.alive = false; powerUp(1, e.x, e.y); } break;
       case 'zoro': if (hit && !e.emergeT) { e.alive = false; powerUp(2, e.x, e.y); } break;
@@ -5824,6 +5860,7 @@ function interact() {
 function startClear() {
   if (G.state !== 'play') return;
   G.state = 'clear'; G.timer = 0; P.auto = true; P.inv = 0; dropCarry();
+  analitica('nivel_superado', { nivel: LEVELS[G.levelIdx].name, tiempo_restante: G.time });
   Sound.musicStop(); Sound.play('clear');
   G.clear = { phase: 'walk', bonus: 0 };
 }
@@ -5906,6 +5943,7 @@ function update() {
   G.t++;
   switch (G.state) {
     case 'title': {
+      if (konami()) break;
       const items = titleItems();
       if (G.menu >= items.length) G.menu = 0;
       if (inp.upP || inp.downP) { G.menu = (G.menu + (inp.downP ? 1 : items.length - 1)) % items.length; Sound.play('tick'); }
@@ -5935,13 +5973,14 @@ function update() {
     case 'map': {
       const m = G.map; G.timer++;
       if (m.t < 40) { m.t++; break; }
+      if (konami()) break;
       if (inp.rightP && m.sel < G.furthest) { m.from = m.sel; m.sel++; m.t = Math.floor(m.from / 5) === Math.floor(m.sel / 5) ? 0 : 40; Sound.play('tick'); }
       else if (inp.leftP && m.sel > 0) { m.from = m.sel; m.sel--; m.t = Math.floor(m.from / 5) === Math.floor(m.sel / 5) ? 0 : 40; Sound.play('tick'); }
       else if (G.timer > 12 && (inp.jumpP || inp.startP || inp.tap)) enterLevel(m.sel);
       break;
     }
     case 'intro':
-      if (G.timer === 0) { if (P.dead) P.power = 0; loadLevel(); updateCamera(true); }
+      if (G.timer === 0) { if (P.dead) P.power = 0; loadLevel(); updateCamera(true); analitica('nivel_empezado', { nivel: LEVELS[G.levelIdx].name, desde_caseta: !!G.checkpoint }); }
       if (++G.timer > 110 || (G.timer > 20 && inp.anyP)) { G.state = 'play'; Sound.musicStart(false); Sound.play('bark'); }
       break;
     case 'play':
@@ -5950,6 +5989,7 @@ function update() {
       if (G.freeze > 0) { G.freeze--; if (G.freeze === 0) P.transform = null; updateParts(); break; }
       updatePlats();
       updatePlayer();
+      actualizarLibelula();
       updateCrumbles();
       updateEnts();
       interact();
@@ -5958,7 +5998,7 @@ function update() {
       if (G.state === 'play' && ++G.timeTick >= 40) {
         G.timeTick = 0; G.time--;
         if (G.time === 100 && !G.hurry) { G.hurry = true; Sound.play('hurry'); Sound.setFast(true); }
-        if (G.time <= 0) { G.time = 0; die(); }
+        if (G.time <= 0) { G.time = 0; die('tiempo'); }
       }
       break;
     case 'pause':
@@ -5974,7 +6014,7 @@ function update() {
       updateParts();
       if (G.timer > 175) {
         G.lives--;
-        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); rankingAlAcabar(false); }
+        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); rankingAlAcabar(false); analitica('fin_partida', { nivel: LEVELS[G.levelIdx].name, puntos: G.score }); }
         else startIntro();
       }
       break;
@@ -6005,7 +6045,7 @@ function updateClear() {
   }
   if (c.phase === 'done' && G.timer > 50 && inp.anyP) {
     G.checkpoint = null;
-    if (c.next >= LEVELS.length) { G.state = 'ending'; G.timer = 0; Sound.play('clear'); rankingAlAcabar(true); }
+    if (c.next >= LEVELS.length) { G.state = 'ending'; G.timer = 0; Sound.play('clear'); rankingAlAcabar(true); analitica('final_juego', { puntos: G.score }); }
     else if (c.newWorld) { G.state = 'worldclear'; G.timer = 0; Sound.play('clear'); }
     else openMap(c.next, G.levelIdx);
   }
@@ -6114,6 +6154,7 @@ async function nombreAceptar() {
     G.rv = { cargando: false, error: false, nombre: r.nombre || nombre, posicion: r.posicion };
     G.rk = null;
     G.state = 'ranking'; G.timer = 0; Sound.play('clear');
+    analitica('ranking_enviado', { puesto: r.posicion || 0 });
     return;
   }
   n.enviando = false; Sound.play('bump');
@@ -6447,6 +6488,7 @@ function drawEnt(e) {
     case 'vecino': { const S = A.vecinos[e.v]; blit(S[e.talk > 0 && ((e.t >> 4) & 1) ? 'wave' : 'idle'][e.dir < 0 ? 0 : 1], e.x - 4, e.y + e.h - 24); break; }
     case 'eduardo': blit(A.eduardo[(e.talk > 0 || G.state === 'clear') && ((e.t >> 4) & 1) ? 'wave' : 'idle'][e.dir < 0 ? 0 : 1], e.x - 4, e.y + e.h - 24); break;
     case 'cafe': blit(A.cafe, e.x, e.y); break;
+    case 'cuadro': dibujarCuadro(e); break;
     case 'jet': {
       rect(e.x - 1, e.baseY - 4, 12, 4, '#3a3e48'); rect(e.x, e.baseY - 4, 10, 1, '#8a8e9a'); rect(e.x + 3, e.baseY - 7, 4, 3, '#5a5e6a');
       if (e.lift > 0) {
@@ -6570,6 +6612,7 @@ function drawPlayer() {
   if (P.spinning) face = ((G.t >> 2) & 1) ? 1 : -1;
   const img = (S[k] || S.idle)[face > 0 ? 0 : 1];
   blit(img, P.x + P.w / 2 - img.width / 2, P.y + P.h - img.height);
+  dibujarAdornosJugador(img, big, k === 'duck', face);
   if (P.power === 3 && !P.onGround && (inp.jump) && P.vy > 0 && !P.spinning) {
     // planeando con el disco en la boca
     const hx = P.facing > 0 ? P.x + P.w - 2 : P.x - 12;
@@ -6580,6 +6623,7 @@ function drawWarpHints() {
   // Las encinas con pasadizo echan destellos por el agujero y enseñan una flecha al acercarse
   for (const w of L.warps) {
     if (!w.dst) continue;
+    if (w.puerta) { dibujarPuerta(w.tx * T, w.ty * T - 48); continue; }   // la puerta secreta no avisa
     const cx = w.tx * T + 16, top = w.ty * T;
     if (cx < camX - 32 || cx > camX + VW + 32) continue;
     for (let k = 0; k < 3; k++) {
@@ -6639,7 +6683,8 @@ function drawWorld() {
   for (const pl of plats) drawPlat(pl);
   for (const e of ents) if (e.alive && !e.back && e.type !== 'goal' && e !== P.carry && (e.active || e.type === 'sock' || e.type === 'check')) drawEnt(e);
   drawWarpHints();
-  if (G.state === 'warp') drawPlayerWarp(); else drawPlayer();
+  if (G.state === 'warp' && !G.warp.puerta) drawPlayerWarp(); else drawPlayer();
+  dibujarLibelula();
   if (P.carry && P.carry.alive) drawEnt(P.carry);
   if (goal) drawGoalFront(goal);
   drawParts();
@@ -6754,6 +6799,8 @@ function drawHUD() {
   ctx.fillStyle = P.pm >= PMETER_FULL ? ((G.t >> 2) & 1 ? '#ffffff' : '#f2b632') : '#f2b632'; ctx.fillRect(VW - 38, y + 12, pmw, 3);
 }
 
+// Versión del juego que se ve en la pantalla de inicio (la misma que en Godot)
+const VERSION_JUEGO = '1.0';
 function drawTitle() {
   if (!L) loadLevel();
   const scroll = G.t * 0.35;
@@ -6766,10 +6813,15 @@ function drawTitle() {
   const gy = 13 * T - camY;
   const dog = A.dog[0].big[((G.t >> 3) & 1) ? 'walkA' : 'walkB'][0];
   ctx.drawImage(dog, 88, gy - 24);
+  const enPantalla = (ox, oy) => (x, y, c) => { ctx.fillStyle = c; ctx.fillRect(ox + x, oy + y, 1, 1); };
+  pixelesAdornos(enPantalla(88, gy - 24), true, false, 1, true, G.t, G.piloto, esCumple());
+  if (G.piloto) pixelesLibelula(enPantalla(70, Math.round(gy - 40 + Math.sin(G.t * 0.08) * 3)), G.t, 1);
   const beetle = A.beetle[(G.t >> 3) & 1][1]; ctx.drawImage(beetle, 60 + ((G.t * 0.2) % 8), gy - 14);
   ctx.drawImage(A.boneFr[(G.t >> 3) & 3], 36, gy - 40);
   ctx.drawImage(A.sock, 300, gy - 60 + Math.round(Math.sin(G.t * 0.06) * 2));
   ctx.drawImage(A.zoro[(G.t >> 3) & 1][1], 250 - ((G.t * 0.4) % 60), gy - 16);
+  dibujarCumpleTitulo();
+  drawText(ctx, 'VERSIÓN ' + VERSION_JUEGO, VW - 4, VH - 11, '#fbf0da', 1, '#2b1a10', 'right');
   // logotipo
   drawTextOutlined(ctx, 'TIZÓN', VW / 2, 32, '#e9a21f', '#4a2608', 6, '#2b1a10');
   ctx.save(); ctx.beginPath(); ctx.rect(0, 32, VW, 18); ctx.clip();
@@ -6784,6 +6836,7 @@ function drawTitle() {
     if (sel && ((G.t >> 4) & 1)) drawText(ctx, '>', Math.round(VW / 2 - textWidth(label) / 2 - 12), y, '#ffd25e', 1, '#2b1a10');
   });
   if (G.best > 0) drawText(ctx, 'MEJOR PUNTUACIÓN ' + String(G.best).padStart(7, '0'), VW / 2, 112 + items.length * 13 + 6, '#fbf0da', 1, '#2b1a10', 'center');
+  dibujarAvisoHuevo();
 }
 function titleItems() { return (Save.data ? ['continue', 'new'] : ['new']).concat(RANKING_URL ? ['ranking'] : []); }
 function drawEnding() {
@@ -6831,6 +6884,7 @@ function drawMap() {
   drawText(ctx, lv.subtitle, VW / 2, VH - 24, '#fbf0da', 1, '#2b1a10', 'center');
   if (m.t >= 40 && ((G.t >> 5) & 1)) drawText(ctx, (G.furthest > 0 ? '← →  ELEGIR · ' : '') + 'SALTA PARA ENTRAR', VW / 2, VH - 12, '#9fe0ea', 1, '#2b1a10', 'center');
   drawText(ctx, 'TIZÓN ×' + G.lives, 8, VH - 36, '#ffffff', 1, '#2b1a10');
+  dibujarAvisoHuevo();
 }
 function drawWorldClear() {
   ctx.fillStyle = '#120d08'; ctx.fillRect(0, 0, VW, VH);
@@ -6894,6 +6948,7 @@ function render() {
     case 'ranking': drawRanking(); return;
   }
   drawWorld(); drawHUD();
+  if (G.warp && G.warp.puerta) { ctx.fillStyle = 'rgba(0,0,0,' + Math.min(1, (G.warp.phase === 'in' ? G.warp.t : 24 - G.warp.t) / 24).toFixed(3) + ')'; ctx.fillRect(0, 0, VW, VH); }
   if (G.state === 'pause') drawPause();
   if (G.state === 'clear') drawClearOverlay();
 }
@@ -7116,6 +7171,219 @@ requestAnimationFrame(frame);
 
 // Ganchos para pruebas automáticas
 window.GAME = { Save, encodeSave, decodeSave, LEVELS, DBG, step(n) { for (let i = 0; i < (n || 1); i++) update(); render(); }, A, G, P, get ents() { return ents; }, get L() { return L; }, keys, touch, SPRITE_WARN, LEVEL, newGame, loadLevel, setPower, update, render, camera: updateCamera, isSolid };
+
+// ============================================================
+//  ESTADÍSTICAS Y HUEVOS DE PASCUA
+//   - Analytics: dónde muere la gente, niveles empezados y superados...
+//     (solo en la web publicada, que carga Google Analytics; en el resto no hace nada)
+//   - Modo piloto: código Konami (↑ ↑ ↓ ↓ ← → ← → B A) en el inicio o en el mapa.
+//     Gafas de aviador, bufanda y una libélula que le sigue. Solo estético.
+//   - Sala secreta en Badajoz 1-3: el portal de la huella (agacharse delante).
+//   - Cumpleaños de Tizón (27 de abril): gorro de fiesta y felicitación en el inicio.
+// ============================================================
+
+// ---------- Analytics ----------
+function analitica(nombre, datos) {
+  try { if (typeof window.gtag === 'function') window.gtag('event', nombre, datos || {}); } catch (e) { }
+}
+// Tramo del mapa (1, 2, 3...) en el que está una casilla: cada tramo es un bloque del mapa de texto
+function tramoDe(tx) {
+  const def = LEVEL_DEFS[G.levelIdx], a = def && L && def.areas[L.name];
+  if (!a) return 0;
+  let x = 0;
+  for (let i = 0; i < a.segments.length; i++) {
+    x += Math.max(...a.segments[i].map(r => r.length));
+    if (tx < x) return i + 1;
+  }
+  return a.segments.length;
+}
+const NOMBRE_CAUSA = {
+  beetle: 'pelotero', bee: 'abejorro', bat: 'murciélago', pato: 'pato de la tómbola', milano: 'milano', snail: 'caracol',
+  shell: 'concha', thistle: 'cardo', cat: 'Micifuz', urraca: 'la Urraca', carpa: 'carpa', paloma: 'paloma',
+  estalactita: 'estalactita', firebar: 'barra de fuego', gate: 'rastrillo',
+};
+function analiticaMuerte(causa) {
+  const tx = Math.floor((P.x + P.w / 2) / T);
+  analitica('muerte', {
+    nivel: LEVELS[G.levelIdx].name, zona: L ? L.name : '', tramo: tramoDe(tx), casilla: tx,
+    causa: NOMBRE_CAUSA[causa] || causa || 'otra',
+  });
+}
+
+// ---------- Cumpleaños de Tizón ----------
+const CUMPLE_TIZON = { dia: 27, mes: 4, anio: 2023 };
+function esCumple() { const d = new Date(); return d.getDate() === CUMPLE_TIZON.dia && d.getMonth() + 1 === CUMPLE_TIZON.mes; }
+function aniosTizon() { return new Date().getFullYear() - CUMPLE_TIZON.anio; }
+let cumpleContado = false;
+function dibujarConfeti() {
+  const pal = ['#d9432f', '#2e6fb7', '#f2c94c', '#4f9a5a', '#e85a8a', '#9fe0ea'];
+  for (let i = 0; i < 36; i++) {
+    const x = Math.floor((i * 53 + G.t * (0.25 + (i % 3) * 0.15)) % VW);
+    const y = Math.floor((i * 37 + G.t * (0.45 + (i % 4) * 0.12)) % VH);
+    ctx.fillStyle = pal[i % pal.length];
+    ctx.fillRect(x, y, (i + (G.t >> 3)) % 2 ? 2 : 1, 2);
+  }
+}
+function dibujarCumpleTitulo() {
+  if (!esCumple()) return;
+  if (!cumpleContado) { cumpleContado = true; analitica('huevo_encontrado', { huevo: 'cumpleaños' }); }
+  dibujarConfeti();
+  if (G.avisoHuevo && G.t < G.avisoHuevo.hasta) return;   // el aviso del modo piloto va en el mismo sitio
+  const txt = '¡FELIZ CUMPLEAÑOS, TIZÓN! HOY CUMPLE ' + aniosTizon() + ' AÑOS', w = textWidth(txt, 1) + 16;
+  ctx.fillStyle = 'rgba(30,20,10,0.8)'; ctx.fillRect(Math.round(VW / 2 - w / 2), 190, w, 16);
+  drawText(ctx, txt, VW / 2, 194, '#ffd25e', 1, null, 'center');
+}
+
+// ---------- Modo piloto (código Konami) ----------
+const KONAMI = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'spin', 'jump'];
+let konamiPos = 0;
+G.piloto = false;
+try { G.piloto = localStorage.getItem('tizon.piloto') === '1'; } catch (e) { }
+G.avisoHuevo = null;
+// Devuelve true si esta pulsación es parte final del código y no debe hacer nada más (la B y la A)
+function konami() {
+  const p = inp.upP ? 'up' : inp.downP ? 'down' : inp.leftP ? 'left' : inp.rightP ? 'right' : inp.spinP ? 'spin' : inp.jumpP ? 'jump' : null;
+  if (!p) return false;
+  if (p === KONAMI[konamiPos]) konamiPos++;
+  else konamiPos = p === KONAMI[0] ? 1 : 0;
+  if (konamiPos === KONAMI.length) {
+    konamiPos = 0;
+    G.piloto = !G.piloto;
+    try { localStorage.setItem('tizon.piloto', G.piloto ? '1' : '0'); } catch (e) { }
+    Sound.init(); Sound.play('bark');
+    G.avisoHuevo = { txt: G.piloto ? '¡MODO PILOTO!' : 'MODO PILOTO DESACTIVADO', hasta: G.t + 150 };
+    if (G.piloto) analitica('huevo_encontrado', { huevo: 'modo piloto' });
+    return true;
+  }
+  return konamiPos === KONAMI.length - 1 && p === 'spin';
+}
+function dibujarAvisoHuevo() {
+  const a = G.avisoHuevo;
+  if (!a) return;
+  if (G.t >= a.hasta) { G.avisoHuevo = null; return; }
+  const w = textWidth(a.txt, 2) + 16;
+  ctx.fillStyle = 'rgba(30,20,10,0.8)'; ctx.fillRect(Math.round(VW / 2 - w / 2), 186, w, 22);
+  drawTextOutlined(ctx, a.txt, VW / 2, 190, '#ffd25e', '#4a2608', 2, null);
+}
+
+// ---------- Adornos de Tizón: gafas y bufanda (piloto) y gorro de fiesta (cumpleaños) ----------
+// Posiciones medidas en los dibujos de Tizón mirando a la derecha, dentro de su casilla
+// (16x16 pequeño, 24x24 grande; agachado, la cabeza baja 4 píxeles).
+const ANCLAS = {
+  pequeno: { ojo: [12, 4], arriba: 0, collar: [8, 10, 6, 6] },
+  grande: { ojo: [18, 5], arriba: 1, collar: [13, 16, 9, 10] },
+  agachado: { ojo: [18, 9], arriba: 5, collar: [13, 16, 13, 14] },
+};
+// Llama a put(x, y, color) por cada píxel, en coordenadas de la casilla (0,0 arriba a la izquierda)
+function pixelesAdornos(put, grande, agachado, cara, moviendose, t, piloto, cumple) {
+  const a = ANCLAS[grande ? (agachado ? 'agachado' : 'grande') : 'pequeno'], W = grande ? 24 : 16;
+  const p = (x, y, c) => put(cara > 0 ? x : W - 1 - x, y, c);
+  const [ex, ey] = a.ojo;
+  if (piloto) {
+    // bufanda roja con una raya blanca y la punta al viento
+    const [x0, x1, y0, y1] = a.collar;
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) p(x, y, '#d9432f');
+    if (y1 > y0) p(x0 + 1, y1, '#fbf0da');
+    const ola = (t >> 3) & 1, cae = moviendose ? 0 : 1;
+    [[1, 0], [2, ola * (1 - cae) + cae], [3, ola * (1 - cae) + cae * 2], [4, 1 - ola + cae * 2]].forEach(([d, dy], i) => p(x0 - d, y0 + dy, i === 3 ? '#fbf0da' : '#d9432f'));
+    // gafas de aviador: la correa por la cabeza y el cristal sobre el ojo
+    for (let x = ex - 5; x <= ex - 2; x++) p(x, ey, '#b5763a');
+    for (let x = ex - 1; x <= ex + 1; x++) for (let y = ey - 1; y <= ey + 1; y++) p(x, y, '#e9a21f');
+    p(ex, ey, '#7fd4e6');
+    p(ex + 1, ey - 1, '#ffffff');
+  }
+  if (cumple) {
+    // gorro de fiesta de rayas con pompón
+    const cx = ex - 2, base = a.arriba - 1;
+    const filas = ['..Y..', '..R..', '.RA..', '.ARA.', 'RARAR', 'BBBBB'];
+    const col = { Y: '#ffd25e', R: '#e85a8a', A: '#2e6fb7', B: '#fbf0da' };
+    filas.forEach((f, i) => [...f].forEach((ch, j) => { if (ch !== '.') p(cx - 2 + j, base - (filas.length - 1) + i, col[ch]); }));
+  }
+}
+function dibujarAdornosJugador(img, big, duck, face) {
+  if (!G.piloto && !esCumple()) return;
+  const W = big ? 24 : 16, H = W;
+  const ox = Math.round(P.x + P.w / 2 - W / 2), oy = Math.round(P.y + P.h - H);
+  pixelesAdornos((x, y, c) => rect(ox + x, oy + y, 1, 1, c), big, duck, face, Math.abs(P.vx) > 0.5 || !P.onGround, G.t, G.piloto, esCumple());
+}
+
+// ---------- La libélula que acompaña al piloto ----------
+// 11x5, mirando a la derecha; dos dibujos para el aleteo
+const LIBELULA = [
+  ['.eWe.eWe...', '.eWe.eWe...', 'ttttttbbbo.', '...........', '...........'],
+  ['...........', '...........', 'ttttttbbbo.', '.eWe.eWe...', '.eWe.eWe...'],
+];
+const COLOR_LIBELULA = { W: '#ffffff', e: '#7ac3e6', t: '#2aa198', b: '#1d5f8a', o: '#ffd25e' };
+function pixelesLibelula(put, t, cara) {
+  const f = LIBELULA[(t >> 2) & 1];
+  f.forEach((fila, y) => [...fila].forEach((ch, x) => { if (ch !== '.') put(cara > 0 ? x : 10 - x, y, COLOR_LIBELULA[ch]); }));
+}
+G.libelula = null;
+// Se mueve en cada fotograma de juego, detrás de Tizón y un poco por encima
+function actualizarLibelula() {
+  if (!G.piloto || P.dead) { G.libelula = null; return; }
+  const tx = P.x + P.w / 2 - P.facing * 18 - 5, ty = P.y - 10 + Math.sin(G.t * 0.08) * 3;
+  const l = G.libelula;
+  if (!l || Math.abs(l.x - tx) > 160 || Math.abs(l.y - ty) > 160) G.libelula = { x: tx, y: ty };
+  else { l.x += (tx - l.x) * 0.12; l.y += (ty - l.y) * 0.12; }
+}
+function dibujarLibelula() {
+  if (!G.piloto || P.dead || !G.libelula) return;
+  const bx = Math.round(G.libelula.x), by = Math.round(G.libelula.y);
+  pixelesLibelula((x, y, c) => rect(bx + x, by + y, 1, 1, c), G.t, P.facing);
+}
+
+// ---------- La puerta de la sala secreta ----------
+// Un portal de madera (2 casillas de ancho y 3 de alto) con una huella de perro: es la única pista
+function dibujarPuerta(x, y) {
+  rect(x, y + 2, 32, 46, '#b9ab92');                 // marco de granito
+  rect(x + 2, y, 28, 2, '#b9ab92');
+  rect(x + 2, y + 46, 28, 2, '#8c7e66');             // escalón
+  rect(x + 4, y + 6, 24, 40, '#6b3a1e');             // las dos hojas
+  rect(x + 6, y + 4, 20, 2, '#6b3a1e');
+  for (let k = 0; k < 6; k++) rect(x + 7 + k * 4, y + 6, 1, 40, '#4f2a14');
+  rect(x + 15, y + 5, 2, 41, '#3a1e0e');
+  rect(x + 4, y + 22, 24, 1, '#4f2a14');
+  rect(x + 12, y + 26, 2, 2, '#e9a21f');             // aldabas
+  rect(x + 18, y + 26, 2, 2, '#e9a21f');
+  // huella: cuatro deditos y la almohadilla
+  const hx = x + 20, hy = y + 12, c = '#e9d3a0';
+  rect(hx, hy, 1, 1, c); rect(hx + 2, hy - 1, 1, 1, c); rect(hx + 4, hy, 1, 1, c); rect(hx + 5, hy + 2, 1, 1, c);
+  rect(hx + 1, hy + 2, 3, 2, c); rect(hx + 2, hy + 4, 1, 1, c);
+}
+
+// ---------- El retrato de Tizón dormido en su cojín ----------
+let _cuadro = null;
+function cuadroTizon() {
+  if (_cuadro) return _cuadro;
+  const W = 56, H = 46, c = mkCanvas(W, H), g = c.getContext('2d');
+  // marco dorado
+  px(g, 0, 0, '#6b4210', W, H); px(g, 1, 1, '#e9a21f', W - 2, H - 2); px(g, 2, 2, '#ffd25e', W - 4, 1); px(g, 2, 2, '#ffd25e', 1, H - 4);
+  px(g, 3, 3, '#8a5a12', W - 6, H - 6);
+  // pared de casa y suelo
+  px(g, 4, 4, '#f3e3c3', W - 8, H - 8); px(g, 4, 31, '#d9b98a', W - 8, H - 35);
+  // cojín rojo con borlas
+  px(g, 12, 32, '#a8321f', 32, 6); px(g, 10, 33, '#a8321f', 36, 4); px(g, 12, 31, '#d9432f', 32, 2); px(g, 14, 30, '#d9432f', 28, 1);
+  px(g, 9, 36, '#ffd25e', 2, 2); px(g, 45, 36, '#ffd25e', 2, 2);
+  // Tizón tumbado (el dibujo de agachado) con los ojos cerrados
+  const d = A.dog[0].big.duck[0];
+  const top = 34 - d.height;
+  g.drawImage(d, 16, top);
+  px(g, 16 + 17, top + 9 - (24 - d.height), '#2b2b33', 2, 1);   // ojo cerrado (en su casilla de 24 está en la fila 9)
+  // zzz
+  const z = (zx, zy, col) => { px(g, zx, zy, col, 3, 1); px(g, zx + 1, zy + 1, col); px(g, zx, zy + 2, col, 3, 1); };
+  z(40, 14, '#7a8aa6'); z(45, 9, '#9fb0cc');
+  hardAlpha(g, W, H);
+  return (_cuadro = c);
+}
+function dibujarCuadro(e) {
+  const x = e.x, y = e.y;
+  blit(cuadroTizon(), x, y);
+  // placa con el nombre
+  rect(x + 16, y + 49, 24, 9, '#8a5a12'); rect(x + 17, y + 50, 22, 7, '#e9a21f');
+  drawText(ctx, 'TIZÓN', Math.round(x + 28 - camX), Math.round(y + 50 - camY), '#4a2608', 1, null, 'center');
+  drawText(ctx, 'HECHO CON CARIÑO POR NACHO', Math.round(x + 28 - camX), Math.round(y + 66 - camY), '#4a2608', 1, null, 'center');
+}
 
 </script>
 </body></html>

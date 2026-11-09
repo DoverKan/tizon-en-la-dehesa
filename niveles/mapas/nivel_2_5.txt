@@ -21,6 +21,8 @@
 #   F  calcetín   X  caseta (punto de control)   G  meta (poste de atrás)
 #   m  plataforma que va y viene   n  plataforma que sube y baja
 #   1-9  pasadizo: encima del tronco (columna izquierda); une los dos troncos con el mismo número
+#   &  puerta secreta (2 de ancho y 3 de alto, se entra agachándose); une las dos puertas del nivel
+#   ?  retrato de Tizón con su placa (sala secreta)
 # Alcazaba:
 #   ^  pinchos   i  antorcha   f  barra de fuego (gira alrededor de un bloque)
 #   K  rastrillo (32x30, cae al pasar por debajo)   b  murciélago (cuelga del techo)

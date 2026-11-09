@@ -52,6 +52,11 @@ var ranking_cargando := false
 var ranking_nombre := ""           # nombre que se resalta en el ranking
 var ranking_puesto := 0            # puesto que acaba de conseguir (0 si no viene de enviar)
 var _tecla_escrita := false
+# huevo de pascua: código Konami (↑ ↑ ↓ ↓ ← → ← → B A) para el modo piloto
+const KONAMI := ["arriba", "arriba", "abajo", "abajo", "izquierda", "derecha", "izquierda", "derecha", "vuelta", "saltar"]
+var _konami := 0
+var aviso_huevo := ""
+var aviso_hasta := 0
 
 const Y_MENU := 102.0
 const PASO_MENU := 10.0
@@ -156,12 +161,39 @@ func _pulsado(accion: String) -> bool:
 	return Input.is_action_just_pressed(accion)
 
 
+## Devuelve true si esta pulsación es la B o la A del final del código (y no debe hacer nada más)
+func _paso_konami() -> bool:
+	var p := ""
+	for a in ["arriba", "abajo", "izquierda", "derecha", "vuelta", "saltar"]:
+		if _pulsado(a):
+			p = a
+			break
+	if p == "":
+		return false
+	if p == KONAMI[_konami]:
+		_konami += 1
+	else:
+		_konami = 1 if p == KONAMI[0] else 0
+	if _konami == KONAMI.size():
+		_konami = 0
+		Juego.opciones.piloto = not Juego.opciones.get("piloto", false)
+		Juego.guardar_opciones()
+		Sonido.tocar("ladrido")
+		aviso_huevo = "¡MODO PILOTO!" if Juego.opciones.piloto else "MODO PILOTO DESACTIVADO"
+		aviso_hasta = Engine.get_physics_frames() + 150
+		return true
+	return _konami == KONAMI.size() - 1 and p == "vuelta"
+
+
 func _physics_process(_delta: float) -> void:
 	temporizador += 1
 	toque = _toque
 	_toque = Vector2(-1, -1)
 	var aceptar := _pulsado("saltar") or _pulsado("pausa") or toque.x >= 0.0
 	var atras := _pulsado("pausa") or _pulsado("vuelta")
+	var huevo := estado in ["titulo", "mapa"] and _paso_konami()
+	if huevo:
+		aceptar = false
 	match estado:
 		"titulo":
 			_mover_fondo()
@@ -240,7 +272,8 @@ func _physics_process(_delta: float) -> void:
 				_mover_fondo()
 			_paso_opciones(atras)
 		"mapa":
-			_paso_mapa()
+			if not huevo:
+				_paso_mapa()
 		"mundo_superado":
 			if temporizador > 90 and aceptar:
 				abrir_mapa(Juego.nivel + 1, Juego.nivel)

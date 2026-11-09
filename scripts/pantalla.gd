@@ -88,6 +88,10 @@ func _draw() -> void:
 		"jugando":
 			if principal.nivel and principal.nivel.estado == "pausa":
 				_pausa(t)
+			elif principal.nivel:
+				var fundido: float = principal.nivel.fundido()
+				if fundido > 0.0:
+					draw_rect(Rect2(0, 0, VW, VH), Color(0, 0, 0, fundido))
 		"fin_partida":
 			draw_rect(Rect2(0, 0, VW, VH), OSCURO)
 			FuentePixel.dibujar(self, "FIN DE LA PARTIDA", Vector2(VW / 2.0, 90), ORO, 2, Color("5a3510"), FuentePixel.CENTRO)
@@ -121,9 +125,16 @@ func _titulo(t: int) -> void:
 	var gy := 176.0
 	var paso := 1 + ((t >> 3) & 1)
 	draw_texture_rect_region(_grande, Rect2(88, gy - 24, 24, 24), Rect2(paso * 24, 0, 24, 24))
+	var piloto: bool = Juego.opciones.get("piloto", false)
+	Adornos.dibujar(self, Vector2(88, gy - 24), true, false, 1, true, t, piloto, Adornos.es_cumple())
+	if piloto:
+		Adornos.dibujar_libelula(self, Vector2(70, roundf(gy - 40 + sin(t * 0.08) * 3.0)), t, 1)
 	draw_texture_rect_region(_pelotero, Rect2(60 + fmod(t * 0.2, 8.0), gy - 14, 16, 16), Rect2(((t >> 3) & 1) * 16, 0, 16, 16))
 	draw_texture(_calcetin, Vector2(300, gy - 60 + roundf(sin(t * 0.06) * 2.0)))
 	draw_texture_rect_region(_zoro, Rect2(266 - fmod(t * 0.4, 60.0), gy - 16, -16, 16), Rect2(((t >> 3) & 1) * 16, 0, 16, 16))
+	_cumple_titulo(t)
+	# versión del juego (Proyecto > Configuración del proyecto > Aplicación > Configuración > Versión)
+	FuentePixel.dibujar(self, "VERSIÓN " + str(ProjectSettings.get_setting("application/config/version", "1.0")), Vector2(VW - 4, VH - 11), CREMA, 1, Color("2b1a10"), FuentePixel.DERECHA)
 	FuentePixel.dibujar_contorno(self, "TIZÓN", VW / 2.0, 26, Color("e9a21f"), Color("4a2608"), 6, Color("2b1a10"))
 	FuentePixel.dibujar_contorno(self, "EN LA DEHESA", VW / 2.0, 78, CREMA, Color("4a2608"), 2, Color("2b1a10"))
 	if principal.estado == "titulo":
@@ -166,6 +177,7 @@ func _titulo(t: int) -> void:
 			_centro(etiqueta, y, AMARILLO if sel else CREMA)
 			if sel:
 				_cursor(etiqueta, y, t)
+	_aviso_huevo()
 
 
 func _suelo(scroll: float) -> void:
@@ -341,6 +353,7 @@ func _mapa(t: int) -> void:
 	if m.t >= 40 and ((t >> 5) & 1) != 0:
 		_centro(("← →  ELEGIR · " if Juego.lejos > 0 else "") + "SALTA PARA ENTRAR", VH - 12, CELESTE)
 	FuentePixel.dibujar(self, "TIZÓN ×" + str(Juego.vidas), Vector2(8, VH - 36), Color.WHITE)
+	_aviso_huevo()
 
 
 func _mundo_superado(t: int) -> void:
@@ -504,3 +517,30 @@ func _ranking(t: int) -> void:
 		_centro(("¡ESTÁS EN EL PUESTO %d!" if p.ranking_puesto <= 20 else "ESTÁS EN EL PUESTO %d") % p.ranking_puesto, 182, AMARILLO, 1, FuentePixel.SIN_SOMBRA)
 	if p.temporizador > 20 and ((t >> 5) & 1) != 0:
 		_centro("PULSA PARA VOLVER", 200, ORO, 1, FuentePixel.SIN_SOMBRA)
+
+
+# ---------------------------------------------------------- huevos de pascua
+## Aviso del modo piloto (código Konami), abajo en el inicio y en el mapa
+func _aviso_huevo() -> void:
+	if principal.aviso_huevo == "" or Engine.get_physics_frames() >= principal.aviso_hasta:
+		return
+	var w := FuentePixel.ancho(principal.aviso_huevo, 2) + 16
+	draw_rect(Rect2(roundf(VW / 2.0 - w / 2.0), 186, w, 22), Color(30 / 255.0, 20 / 255.0, 10 / 255.0, 0.8))
+	FuentePixel.dibujar_contorno(self, principal.aviso_huevo, VW / 2.0, 190, AMARILLO, Color("4a2608"), 2)
+
+
+## Cumpleaños de Tizón: confeti y felicitación en el inicio
+func _cumple_titulo(t: int) -> void:
+	if not Adornos.es_cumple():
+		return
+	var pal := [Color("d9432f"), Color("2e6fb7"), Color("f2c94c"), Color("4f9a5a"), Color("e85a8a"), Color("9fe0ea")]
+	for i in 36:
+		var x := floorf(fmod(i * 53 + t * (0.25 + (i % 3) * 0.15), VW))
+		var y := floorf(fmod(i * 37 + t * (0.45 + (i % 4) * 0.12), VH))
+		draw_rect(Rect2(x, y, 2 if (i + (t >> 3)) % 2 != 0 else 1, 2), pal[i % pal.size()])
+	if principal.aviso_huevo != "" and Engine.get_physics_frames() < principal.aviso_hasta:
+		return
+	var texto := "¡FELIZ CUMPLEAÑOS, TIZÓN! HOY CUMPLE %d AÑOS" % Adornos.anios()
+	var w := FuentePixel.ancho(texto) + 16
+	draw_rect(Rect2(roundf(VW / 2.0 - w / 2.0), 190, w, 16), Color(30 / 255.0, 20 / 255.0, 10 / 255.0, 0.8))
+	_centro(texto, 194, AMARILLO, 1, FuentePixel.SIN_SOMBRA)

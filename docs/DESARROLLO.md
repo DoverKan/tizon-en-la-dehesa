@@ -31,6 +31,7 @@ Abre una escena de `niveles/`:
   - Los calcetines llevan un `indice` del 0 al 4.
   - Los vecinos llevan una `variante` (0 a 3) y su `mensaje`.
 - **Pasadizos**: pon un nodo `Pasadizo` centrado sobre la boca de una encina hueca. Dos pasadizos con el mismo `numero` quedan conectados.
+  - Si marcas `puerta`, el pasadizo es una puerta de 2 casillas de ancho y 3 de alto: se dibuja sola, se entra agachándose delante y se pasa con un fundido. En los mapas de texto es `&`.
 - **Zonas**: cada zona tiene un rectángulo que limita la cámara y un tema de fondo (`dehesa`, `atardecer`, `cueva`, `castillo`, `ciudad`, `rio`, `jardin`, `museo`, `feria`, `gruta`, `cielo` o `romano`). En el castillo la cámara se queda arriba, para que se vea el techo. En la `gruta` todo está a oscuras.
 - **Sala del jefe**: los nodos `Puerta` marcan las casillas que se convierten en piedra cuando Tizón pasa dos casillas más allá de la primera puerta. El nivel se supera al vencer al jefe (no hace falta meta).
 - En el nodo raíz del nivel, **Avance** hace que la zona principal avance sola (píxeles por fotograma; el nivel de las cigüeñas usa 0,6).
@@ -95,7 +96,25 @@ Al acabar la partida (fin de partida o tras vencer a la Urraca), si la puntuaci�
 - En Android hace falta el permiso de internet; ya está activado en el preajuste.
 - El código del servidor (PHP y MySQL) no está en este repositorio porque su configuración lleva la contraseña de la base de datos.
 
+## Estadísticas (Google Analytics)
+
+La versión web publicada (`docs/index.html`) envía a Google Analytics (G-J0WR95LLC3) estos eventos. La versión de Godot no envía nada.
+
+| Evento | Datos |
+|---|---|
+| `muerte` | `nivel`, `zona` (main, cueva...), `tramo` (bloque de 32 columnas del mapa, desde 1), `casilla` (columna) y `causa` (caída, agua, tiempo, pinchos, barra de fuego, rastrillo, pelotero, Micifuz...) |
+| `nivel_empezado` | `nivel` y `desde_caseta`; cada vida perdida cuenta como un intento nuevo |
+| `nivel_superado` | `nivel` y `tiempo_restante` |
+| `fin_partida` | `nivel` y `puntos` |
+| `final_juego` | `puntos` |
+| `ranking_enviado` | `puesto` |
+| `huevo_encontrado` | `huevo`: cuál se ha encontrado |
+
+Para verlos con sus datos en los informes, en Analytics: **Administrar > Definiciones personalizadas > Crear dimensión personalizada**, con ámbito *Evento*, una por parámetro: `nivel`, `zona`, `tramo`, `casilla`, `causa` y `huevo`. Después, en **Explorar**, una tabla con filas `nivel` y `tramo` (o `casilla`) y el número de eventos `muerte` enseña dónde muere más la gente.
+
 ## Exportar a PC, Android, iOS y web
+
+La versión que sale abajo a la derecha en la pantalla de inicio está en **Proyecto > Configuración del proyecto > Aplicación > Configuración > Versión** (en la web, en `VERSION_JUEGO`). Al cambiarla, cámbiala también en los preajustes de exportación (versión del archivo en Windows, `version/name` y `version/code` en Android, `short_version` en macOS e iOS).
 
 El proyecto trae ya preparados los preajustes de **Proyecto > Exportar** para Windows, Linux, macOS, Android, iOS y Web. Cada uno deja el juego en su carpeta de `exportar/`. El renderizador es **Compatibilidad**, que funciona en todas esas plataformas, y está activada la compresión de texturas ETC2/ASTC que piden Android e iOS.
 

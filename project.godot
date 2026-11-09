@@ -12,6 +12,7 @@ config_version=5
 
 config/name="Tizón en la Dehesa"
 config/description="Plataformas al estilo de los clásicos de 16 bits: Tizón, un schnauzer mini, recorre la dehesa extremeña."
+config/version="1.0"
 run/main_scene="res://escenas/principal.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.png"

@@ -48,7 +48,7 @@ var nuevo_mundo := false    # se acaba de pasar un mundo por primera vez
 var record := 0
 var partida = null          # última partida guardada (Dictionary) o null
 var mundos: Array = []      # nombre y posición de los niveles en el mapa de cada mundo
-var opciones := {"efectos": true, "musica": true, "tactil": "auto", "mando": "cruceta", "pantalla_completa": false, "nombre": ""}
+var opciones := {"efectos": true, "musica": true, "tactil": "auto", "mando": "cruceta", "pantalla_completa": false, "nombre": "", "piloto": false}
 # para el ranking: fotogramas jugados y si la partida viene de un código (esas no cuentan)
 var jugado := 0
 var con_codigo := false

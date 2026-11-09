@@ -223,6 +223,7 @@ func _crear_escenas() -> void:
 	_entidad("meta", "pieza", E + "meta.gd", "", 1, Vector2.ZERO)
 	_entidad("plataforma", "pieza", E + "plataforma.gd", "", 1, Vector2.ZERO)
 	_entidad("pasadizo", "pieza", E + "pasadizo.gd", "", 1, Vector2.ZERO)
+	_entidad("cuadro", "pieza", E + "cuadro.gd", "", 1, Vector2.ZERO)
 	# Alcazaba
 	_entidad("antorcha", "pieza", E + "antorcha.gd", S + "antorcha.png", 3, Vector2(8, 6))
 	_entidad("barra_fuego", "pieza", E + "barra_fuego.gd", "", 1, Vector2.ZERO)
@@ -342,7 +343,7 @@ func _crear_nivel(ruta_txt: String, ruta_tscn: String) -> void:
 				return true
 			return car.call(x, y) == "#"
 		var de_fachada := func(c: String) -> bool:
-			return c in ["W", "w", "="]
+			return c in ["W", "w", "=", "&"]
 		var socks := []
 		var n_vecino := 0
 		var saludos: Array = SALUDOS.get(tema, SALUDOS.ciudad)
@@ -352,6 +353,12 @@ func _crear_nivel(ruta_txt: String, ruta_tscn: String) -> void:
 			for x in w:
 				var ch: String = car.call(x, y)
 				var celda := Vector2i(x, y + oy)
+				if ch == "&":
+					# puerta secreta: en la calle queda fachada detrás de la puerta
+					orden.append([x, y, ch])
+					if tema != "ciudad":
+						continue
+					ch = "W"
 				if ch == "T":
 					var lado := tronco_racha % 2
 					tronco_racha += 1
@@ -511,6 +518,12 @@ func _crear_nivel(ruta_txt: String, ruta_tscn: String) -> void:
 					n_vecino += 1
 				"E":
 					_poner(ents, "eduardo", pies)
+				"&":
+					var pu := _poner(ents, "pasadizo", Vector2(x * T + 16, (y + oy + 1) * T))
+					pu.set("numero", 100)
+					pu.set("puerta", true)
+				"?":
+					_poner(ents, "cuadro", Vector2(x * T + 16, (y + oy) * T))
 				"Q":
 					var q := _poner(ents, "cafe", Vector2(x * T, (y + oy + 1) * T))
 					q.set("puerta_x", x * T + 72.0)

@@ -71,7 +71,9 @@ var derrapando := false
 var transformacion := 0      # fotogramas de parpadeo al crecer o encoger
 var poder_anterior := 0
 var globo := {}              # colgado de un globo de la feria: {"t": fotogramas que quedan, "c": color}
-var oculto := false          # ya ha entrado en The Cereal Cafe
+var oculto := false
+var _adornos: Node2D             # gafas, bufanda y gorro, encima del dibujo (huevos de pascua)
+var _libelula := Vector2.INF     # posición de la libélula del modo piloto, en coordenadas del nivel          # ya ha entrado en The Cereal Cafe
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var forma: CollisionShape2D = $Forma
@@ -84,6 +86,10 @@ func _ready() -> void:
 	floor_max_angle = deg_to_rad(10)
 	forma.shape = RectangleShape2D.new()
 	poder = Juego.poder
+	_adornos = Node2D.new()
+	_adornos.name = "Adornos"
+	add_child(_adornos)
+	_adornos.draw.connect(_dibujar_adornos)
 	_ajustar_forma()
 	_ajustar_sprite()
 
@@ -426,6 +432,33 @@ func _ajustar_sprite() -> void:
 	sprite.flip_h = cara < 0
 	sprite.visible = not oculto and not (invencible > 0 and (Engine.get_physics_frames() & 2) != 0)
 	queue_redraw()
+	if _adornos:
+		_adornos.queue_redraw()
+
+
+## La libélula del modo piloto vuela detrás de Tizón, un poco por encima
+func _physics_process(_delta: float) -> void:
+	if not Juego.opciones.get("piloto", false) or muerto:
+		_libelula = Vector2.INF
+		return
+	var f := Engine.get_physics_frames()
+	var objetivo := Vector2(global_position.x - mirando * 18.0 - 5.0, global_position.y - alto() - 10.0 + sin(f * 0.08) * 3.0)
+	if _libelula == Vector2.INF or _libelula.distance_to(objetivo) > 160.0:
+		_libelula = objetivo
+	else:
+		_libelula += (objetivo - _libelula) * 0.12
+
+
+func _dibujar_adornos() -> void:
+	var piloto: bool = Juego.opciones.get("piloto", false)
+	var cumple := Adornos.es_cumple()
+	var f := Engine.get_physics_frames()
+	if (piloto or cumple) and sprite.visible and not muerto:
+		var grande := sprite.texture != TEX_PEQ
+		Adornos.dibujar(_adornos, sprite.position, grande, grande and sprite.frame == ESPECIAL, -1 if sprite.flip_h else 1,
+			absf(velocity.x) > 30.0 or not en_suelo, f, piloto, cumple)
+	if piloto and _libelula != Vector2.INF and not oculto:
+		Adornos.dibujar_libelula(_adornos, (_libelula - global_position).round(), f, mirando)
 
 
 func _draw() -> void:
