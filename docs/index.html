@@ -10,7 +10,7 @@
   Versión:  1.0 (noviembre de 2026)
   © 2026 Nacho Cano
   ============================================================================
---><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
+--><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +60,9 @@ button.chip {
 }
 button.chip:hover { border-color: #5a4a30; }
 button.chip[aria-pressed="true"] { border-color: var(--teal); color: #d9f3f7; }
+button.chip.instalar { color: #1b130a; background: var(--honey); border-color: var(--honey); }
+.nota-instalar { flex-basis: 100%; margin: 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--muted); font-size: 13.5px; }
+.nota-instalar b { color: var(--fg); }
 button:focus-visible, .screen:focus-visible { outline: 2px solid var(--honey); outline-offset: 3px; }
 
 .stage { display: grid; gap: 12px; justify-items: center; }
@@ -209,7 +212,9 @@ button.chip.danger-solid { color: #1b130a; background: #e8826a; border-color: #e
       <button class="chip" id="btnSound" type="button" aria-pressed="true">Sonido activado</button>
       <button class="chip" id="btnTouch" type="button" aria-pressed="false">Mandos táctiles</button>
       <button class="chip" id="btnFull" type="button">Pantalla completa</button>
+      <button class="chip instalar" id="btnInstalar" type="button" hidden>Instalar la app</button>
     </div>
+    <p class="nota-instalar" id="notaInstalar" hidden>En iPhone y iPad: abre la página en Safari, pulsa el botón <b>Compartir</b> y elige <b>Añadir a pantalla de inicio</b>.</p>
   </header>
 
   <main class="stage" id="stage">
@@ -6683,6 +6688,28 @@ document.getElementById('btnSalir').addEventListener('click', () => {
   try { if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); else if (document.webkitFullscreenElement) document.webkitExitFullscreen(); } catch (e) { }
   setFs(false);
 });
+
+// Instalar como aplicación. Solo funciona en la web publicada (docs/index.html), que trae
+// el manifiesto y el service worker; en otros sitios el botón no llega a aparecer.
+(function instalar() {
+  const btn = document.getElementById('btnInstalar'), nota = document.getElementById('notaInstalar');
+  const instalada = () => { try { return window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } };
+  if (instalada()) { setFs(true); return; }   // abierta desde el icono: directamente al juego
+  if (!document.querySelector('link[rel="manifest"]')) return;
+  let aviso = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); aviso = e; btn.hidden = false; });
+  window.addEventListener('appinstalled', () => { aviso = null; btn.hidden = true; });
+  // Safari (iPhone y iPad) no avisa: se instala a mano desde Compartir
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (ios) btn.hidden = false;
+  btn.addEventListener('click', async () => {
+    if (aviso) {
+      aviso.prompt();
+      try { await aviso.userChoice; } catch (e) { }
+      aviso = null; btn.hidden = true;
+    } else nota.hidden = !nota.hidden;
+  });
+})();
 
 const pad = document.getElementById('pad'), btnTouch = document.getElementById('btnTouch');
 function showPad(on) { pad.hidden = !on; document.getElementById('stage').classList.toggle('con-mandos', on); document.getElementById('pauseBtn').hidden = !on; if (on) hideHint(); btnTouch.setAttribute('aria-pressed', String(on)); }

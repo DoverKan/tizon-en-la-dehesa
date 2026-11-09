@@ -4,6 +4,8 @@ Juego de plataformas al estilo de Super Mario World, hecho con **Godot 4**. Su p
 
 **[▶ Jugar en el navegador](https://doverkan.github.io/tizon-en-la-dehesa/)**: no hay que instalar nada y funciona en el ordenador y en el móvil.
 
+También se puede **instalar como aplicación**, con su icono, a pantalla completa y sin conexión. En Android y en el ordenador (Chrome o Edge), con el botón **Instalar la app**; en iPhone y iPad, desde Safari con **Compartir > Añadir a pantalla de inicio**.
+
 ![Pantalla de inicio](docs/capturas/01_inicio.png)
 
 | | |
@@ -99,7 +101,7 @@ assets/       gráficos, sonidos y datos (mapa del mundo, bestiario)
 tiles/        TileSet con colisiones
 tools/        constructor de niveles
 exportar/     aquí deja Godot los juegos exportados
-docs/         guía de desarrollo, capturas y el juego web (index.html)
+docs/         guía de desarrollo, capturas y el juego web (index.html, instalable como aplicación)
 github.bat    menú para subir y descargar los cambios de GitHub (github.ps1)
 ```
 
