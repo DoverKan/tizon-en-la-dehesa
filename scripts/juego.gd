@@ -48,7 +48,10 @@ var nuevo_mundo := false    # se acaba de pasar un mundo por primera vez
 var record := 0
 var partida = null          # última partida guardada (Dictionary) o null
 var mundos: Array = []      # nombre y posición de los niveles en el mapa de cada mundo
-var opciones := {"efectos": true, "musica": true, "tactil": "auto", "mando": "cruceta", "pantalla_completa": false}
+var opciones := {"efectos": true, "musica": true, "tactil": "auto", "mando": "cruceta", "pantalla_completa": false, "nombre": ""}
+# para el ranking: fotogramas jugados y si la partida viene de un código (esas no cuentan)
+var jugado := 0
+var con_codigo := false
 
 
 func _ready() -> void:
@@ -81,6 +84,8 @@ func nueva_partida() -> void:
 	poder = 0
 	desde_caseta = false
 	calcetines = calcetines_vacios()
+	jugado = 0
+	con_codigo = false
 
 
 func continuar(d: Dictionary) -> void:
@@ -92,6 +97,8 @@ func continuar(d: Dictionary) -> void:
 	huesos = d.huesos
 	poder = d.poder
 	calcetines = d.calcetines.duplicate(true)
+	jugado = int(d.get("jugado", 0)) * 60
+	con_codigo = d.get("codigo", false) == true
 
 
 ## Al elegir un nivel en el mapa: si su caseta estaba encendida, se empieza en ella.
@@ -130,6 +137,7 @@ func guardar(nivel_guardado: int, caseta: bool) -> void:
 		"v": VERSION_PARTIDA, "nivel": nivel_guardado, "lejos": lejos, "caseta": caseta, "vidas": vidas,
 		"puntos": puntos, "huesos": huesos, "poder": poder,
 		"calcetines": calcetines.duplicate(true), "t": int(Time.get_unix_time_from_system()),
+		"jugado": int(jugado / 60.0), "codigo": con_codigo,
 	}
 	_escribir_partida()
 
@@ -210,6 +218,8 @@ func sanear(d) -> Variant:
 		"poder": clampi(int(d.get("poder", 0)), 0, 3),
 		"calcetines": cal,
 		"t": maxi(0, int(d.get("t", 0))),
+		"jugado": clampi(int(d.get("jugado", 0)), 0, 360000),
+		"codigo": d.get("codigo", false) == true,
 	}
 
 
@@ -330,6 +340,7 @@ func cargar_codigo(texto: String) -> bool:
 	var d = leer_codigo(texto)
 	if d == null:
 		return false
+	d.codigo = true           # las partidas cargadas con código no entran en el ranking
 	partida = d
 	_escribir_partida()
 	return true

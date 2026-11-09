@@ -10,7 +10,7 @@
   Versión:  1.0 (noviembre de 2026)
   © 2026 Nacho Cano
   ============================================================================
---><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
+--><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>window.TIZON_RANKING = "https://www.doverkan.com/tizon_ranking/api.php";</script><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -273,6 +273,7 @@ button.chip.danger-solid { color: #1b130a; background: #e8826a; border-color: #e
         </div>
         <p class="note" id="codeMsg" role="status"></p>
       </form>
+      <p class="note" id="notaRanking" hidden>Hay un <a id="enlaceRanking" href="#" target="_blank" rel="noopener">ranking de jugadores</a>: al acabar una partida, si tu puntuación entra, el juego te pide un nombre. Las partidas cargadas con un código no cuentan.</p>
       <div class="reset">
         <button class="chip danger" id="btnReset" type="button">Empezar de cero</button>
         <div class="reset-confirm" id="resetConfirm" hidden>
@@ -4561,6 +4562,8 @@ function sanitizeSave(d) {
     v: SAVE_LAYOUT, level: n(d.level, 0, levels - 1), furthest: Math.max(n(d.level, 0, levels - 1), n(d.furthest, 0, levels - 1)), cp: d.cp === true,
     lives: n(d.lives, 1, 63), score: n(d.score, 0, SCORE_MAX), bones: n(d.bones, 0, 99),
     power: n(d.power, 0, 3), socks, t: n(d.t, 0, 8.64e15),
+    // para el ranking: segundos jugados y si la partida viene de un código (esas no cuentan)
+    jugado: n(d.jugado, 0, 360000), cod: d.cod === true,
   };
 }
 
@@ -4723,6 +4726,7 @@ function bindSavePanel() {
     }
     const d = decodeSave(inp.value);
     if (!d) { msg.textContent = 'Ese código no es válido. Revisa que tenga las 21 letras y números (13 o 15 si es un código antiguo), sin O, I, 0 ni 1.'; return; }
+    d.cod = true;                 // las partidas cargadas con código no entran en el ranking
     Save.set(d); inp.value = ''; G.menu = 0;
     msg.textContent = 'Código cargado. En la pantalla de inicio elige Continuar y el mapa te lleva al nivel.';
   });
@@ -4834,6 +4838,7 @@ function pollInput() {
   n.downP = n.down && !prevInp.down;
   n.leftP = n.left && !prevInp.left;
   n.rightP = n.right && !prevInp.right;
+  n.tap = G.tap;
   n.anyP = n.jumpP || n.startP || n.spinP || G.tap;
   G.tap = false;
   inp = n;
@@ -4847,6 +4852,7 @@ const G = {
   lives: 5, score: 0, bones: 0, time: 300, timeTick: 0,
   socks: [false, false, false, false, false], socksByLevel: [], levelIdx: 0, furthest: 0, cpLevel: -1, map: null, menu: 0, tapPos: null, checkpoint: null, warp: null,
   cam: { x: 0, y: 0 }, combo: 0, freeze: 0, best: 0, clear: null, hurry: false,
+  jugado: 0, cod: false,   // fotogramas jugados y si la partida viene de un código (para el ranking)
 };
 try { G.best = +(localStorage.getItem('tizon.best') || 0); } catch (e) { }
 let L = null;          // nivel en juego (copia de las casillas)
@@ -5843,6 +5849,7 @@ function updateCamera(instant) {
 
 function freshSocks() { return LEVELS.map(() => [false, false, false, false, false]); }
 function newGame() {
+  G.jugado = 0; G.cod = false;
   G.lives = 5; G.score = 0; G.bones = 0; G.checkpoint = null; G.levelIdx = 0; G.furthest = 0; G.cpLevel = -1;
   G.socksByLevel = freshSocks();
   P.power = 0; P.dead = false;
@@ -5874,6 +5881,7 @@ function checkpointOf(idx) {
 }
 function continueGame(sv) {
   G.levelIdx = sv.level; G.lives = sv.lives; G.score = sv.score; G.bones = sv.bones; G.furthest = sv.furthest;
+  G.jugado = (sv.jugado || 0) * 60; G.cod = sv.cod === true;
   G.socksByLevel = sv.socks.map(a => a.slice());
   G.cpLevel = sv.cp ? sv.level : -1;
   P.power = sv.power; P.dead = false;
@@ -5888,7 +5896,7 @@ function startIntro() {
 // Guarda el progreso: al pasar un nivel (empieza el siguiente) o al tocar la caseta
 function saveProgress(level, cp) {
   G.furthest = Math.max(G.furthest, level);
-  Save.set(sanitizeSave({ v: SAVE_LAYOUT, level, furthest: G.furthest, cp, lives: G.lives, score: G.score, bones: G.bones, power: P.power, socks: G.socksByLevel, t: Date.now() }));
+  Save.set(sanitizeSave({ v: SAVE_LAYOUT, level, furthest: G.furthest, cp, lives: G.lives, score: G.score, bones: G.bones, power: P.power, socks: G.socksByLevel, t: Date.now(), jugado: Math.floor(G.jugado / 60), cod: G.cod }));
 }
 function pauseGame() { if (G.state !== 'play') return; G.state = 'pause'; Sound.musicStop(); Sound.play('pause'); }
 function resumeGame() { G.state = 'play'; Sound.play('pause'); Sound.musicStart(G.hurry); }
@@ -5901,18 +5909,25 @@ function update() {
       const items = titleItems();
       if (G.menu >= items.length) G.menu = 0;
       if (inp.upP || inp.downP) { G.menu = (G.menu + (inp.downP ? 1 : items.length - 1)) % items.length; Sound.play('tick'); }
-      if (G.tap && G.tapPos && items.length > 1) {
+      if (inp.tap && G.tapPos && items.length > 1) {
         const i = items.findIndex((_, k) => Math.abs(G.tapPos.y - (110 + k * 13 + 3)) <= 6);
         if (i >= 0) G.menu = i;
       }
       if (inp.anyP) {
         Sound.init();
-        if (items[G.menu] === 'continue' && Save.data) continueGame(Save.data); else newGame();
+        if (items[G.menu] === 'ranking') abrirRanking();
+        else if (items[G.menu] === 'continue' && Save.data) continueGame(Save.data); else newGame();
       }
       break;
     }
     case 'ending':
-      if (++G.timer > 90 && inp.anyP) { G.state = 'title'; G.timer = 0; G.menu = 0; }
+      if (++G.timer > 90 && inp.anyP) trasPartida();
+      break;
+    case 'nombre':
+      updateNombre();
+      break;
+    case 'ranking':
+      if (++G.timer > 20 && inp.anyP) { G.state = 'title'; G.timer = 0; G.menu = titleItems().indexOf('ranking'); }
       break;
     case 'worldclear':
       if (++G.timer > 90 && inp.anyP) openMap(G.levelIdx + 1, G.levelIdx);
@@ -5922,7 +5937,7 @@ function update() {
       if (m.t < 40) { m.t++; break; }
       if (inp.rightP && m.sel < G.furthest) { m.from = m.sel; m.sel++; m.t = Math.floor(m.from / 5) === Math.floor(m.sel / 5) ? 0 : 40; Sound.play('tick'); }
       else if (inp.leftP && m.sel > 0) { m.from = m.sel; m.sel--; m.t = Math.floor(m.from / 5) === Math.floor(m.sel / 5) ? 0 : 40; Sound.play('tick'); }
-      else if (G.timer > 12 && (inp.jumpP || inp.startP || G.tap)) enterLevel(m.sel);
+      else if (G.timer > 12 && (inp.jumpP || inp.startP || inp.tap)) enterLevel(m.sel);
       break;
     }
     case 'intro':
@@ -5931,6 +5946,7 @@ function update() {
       break;
     case 'play':
       if (inp.startP) { pauseGame(); break; }
+      G.jugado++;
       if (G.freeze > 0) { G.freeze--; if (G.freeze === 0) P.transform = null; updateParts(); break; }
       updatePlats();
       updatePlayer();
@@ -5958,7 +5974,7 @@ function update() {
       updateParts();
       if (G.timer > 175) {
         G.lives--;
-        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); }
+        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); rankingAlAcabar(false); }
         else startIntro();
       }
       break;
@@ -5966,8 +5982,7 @@ function update() {
       updateClear();
       break;
     case 'gameover':
-      if (++G.timer > 60 && inp.anyP) { G.state = 'title'; G.timer = 0; }
-      if (G.timer > 420) { G.state = 'title'; G.timer = 0; }
+      if ((++G.timer > 60 && inp.anyP) || G.timer > 420) trasPartida();
       break;
   }
 }
@@ -5990,12 +6005,232 @@ function updateClear() {
   }
   if (c.phase === 'done' && G.timer > 50 && inp.anyP) {
     G.checkpoint = null;
-    if (c.next >= LEVELS.length) { G.state = 'ending'; G.timer = 0; Sound.play('clear'); }
+    if (c.next >= LEVELS.length) { G.state = 'ending'; G.timer = 0; Sound.play('clear'); rankingAlAcabar(true); }
     else if (c.newWorld) { G.state = 'worldclear'; G.timer = 0; Sound.play('clear'); }
     else openMap(c.next, G.levelIdx);
   }
 }
 function saveBest() { if (G.score > G.best) { G.best = G.score; try { localStorage.setItem('tizon.best', String(G.best)); } catch (e) { } } }
+
+// ============================================================
+//  RANKING DE JUGADORES
+//  Solo en la web publicada (docs/index.html): build.py pone la dirección de la
+//  API en window.TIZON_RANKING. En el artefacto de Claude no hay ranking.
+// ============================================================
+const RANKING_URL = typeof window.TIZON_RANKING === 'string' ? window.TIZON_RANKING : '';
+const NOMBRE_MAX = 8;
+const TECLADO = ['ABCDEFGHIJKLM', 'NÑOPQRSTUVWXY', 'Z0123456789.-'].map(f => f.split(''));
+const TECLAS = [{ k: 'esp', t: 'ESPACIO', c0: 0, c1: 2 }, { k: 'borra', t: 'BORRAR', c0: 3, c1: 5 }, { k: 'salir', t: 'SALIR', c0: 6, c1: 8 }, { k: 'ok', t: 'ACEPTAR', c0: 9, c1: 12 }];
+const TECLADO_X = 62, TECLADO_Y = 88, CELDA_W = 20, CELDA_H = 15;
+const Ranking = {
+  estado: 'nada', lista: [], puestos: 20,   // estado: nada, cargando, ok, error
+  async pedir() {
+    this.estado = 'cargando';
+    const r = await rankingFetch({ method: 'GET' });
+    if (r && r.ok && Array.isArray(r.ranking)) { this.lista = r.ranking; this.puestos = r.puestos || 20; this.estado = 'ok'; }
+    else this.estado = 'error';
+    return this.estado === 'ok';
+  },
+  enviar(datos) { return rankingFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) }); },
+};
+async function rankingFetch(opciones) {
+  const ac = typeof AbortController === 'function' ? new AbortController() : null;
+  const t = ac ? setTimeout(() => ac.abort(), 8000) : 0;
+  try {
+    const res = await fetch(RANKING_URL, { ...opciones, cache: 'no-store', credentials: 'omit', signal: ac ? ac.signal : undefined });
+    const j = await res.json();
+    return j && typeof j === 'object' ? j : null;
+  } catch (e) { return null; } finally { clearTimeout(t); }
+}
+const puedeEntrar = () => !!RANKING_URL && !G.cod && G.score > 0;
+// Al acabar la partida (fin de partida o final): se apunta la puntuación y se mira el ranking
+function rankingAlAcabar(final) {
+  G.rk = null;
+  if (!puedeEntrar()) return;
+  G.rk = {
+    puntos: G.score, final, nivel: final ? LEVELS.length : Math.min(LEVELS.length, G.furthest + 1),
+    calcetines: G.socksByLevel.flat().filter(Boolean).length, segundos: Math.floor(G.jugado / 60),
+  };
+  Ranking.pedir();
+}
+function entraEnRanking() {
+  if (!G.rk || Ranking.estado !== 'ok') return false;
+  const l = Ranking.lista;
+  return l.length < Ranking.puestos || G.rk.puntos > l[l.length - 1].puntos;
+}
+function trasPartida() {
+  if (G.rk && Ranking.estado === 'cargando') return;   // aún se está mirando el ranking
+  if (entraEnRanking()) abrirNombre();
+  else { G.state = 'title'; G.timer = 0; G.menu = 0; }
+}
+function drawEstadoRanking(y) {
+  let txt = '';
+  if (RANKING_URL && G.cod && G.score > 0) txt = 'LAS PARTIDAS CARGADAS CON CÓDIGO NO ENTRAN EN EL RANKING';
+  else if (G.rk && Ranking.estado === 'cargando') txt = 'MIRANDO EL RANKING...';
+  else if (G.rk && Ranking.estado === 'error') txt = 'SIN CONEXIÓN CON EL RANKING';
+  else if (entraEnRanking()) txt = '¡ENTRAS EN EL RANKING!';
+  if (txt) drawText(ctx, txt, VW / 2, y, entraEnRanking() ? '#ffd25e' : '#9fe0ea', 1, null, 'center');
+}
+
+// ---------- Escribir el nombre (como en las recreativas) ----------
+function abrirNombre() {
+  let previo = '';
+  try { previo = (localStorage.getItem('tizon.nombre') || '').toUpperCase().replace(/[^A-ZÑ0-9 .\-]/g, '').slice(0, NOMBRE_MAX); } catch (e) { }
+  G.nm = { texto: previo, f: previo ? 3 : 0, c: previo ? 9 : 0, msg: '', enviando: false };
+  G.state = 'nombre'; G.timer = 0;
+  Sound.play('oneup');
+}
+function nombreEscribir(ch) {
+  const n = G.nm;
+  if (n.enviando) return;
+  if (n.texto.length >= NOMBRE_MAX || (ch === ' ' && (!n.texto || n.texto.endsWith(' ')))) { Sound.play('bump'); return; }
+  n.texto += ch; n.msg = ''; Sound.play('tick');
+  if (n.texto.length >= NOMBRE_MAX) { n.f = 3; n.c = 9; }   // lleno: el cursor salta a ACEPTAR
+}
+function nombreBorrar() { const n = G.nm; if (n.enviando || !n.texto) return; n.texto = n.texto.slice(0, -1); n.msg = ''; Sound.play('tick'); }
+function nombreSalir() { if (G.nm.enviando) return; G.state = 'title'; G.timer = 0; G.menu = 0; }
+function teclaEn(f, c) { return f < 3 ? TECLADO[f][c] : TECLAS.find(b => c >= b.c0 && c <= b.c1); }
+function nombreActivar() {
+  const n = G.nm, t = teclaEn(n.f, n.c);
+  if (n.f < 3) { nombreEscribir(t); return; }
+  if (t.k === 'esp') nombreEscribir(' ');
+  else if (t.k === 'borra') nombreBorrar();
+  else if (t.k === 'salir') nombreSalir();
+  else nombreAceptar();
+}
+async function nombreAceptar() {
+  const n = G.nm;
+  if (n.enviando) return;
+  const nombre = n.texto.trim().replace(/ {2,}/g, ' ');
+  if (!/[A-ZÑ0-9]/.test(nombre)) { n.msg = 'ESCRIBE UN NOMBRE'; Sound.play('bump'); return; }
+  n.enviando = true; n.msg = '';
+  const r = await Ranking.enviar({ nombre, ...G.rk, plataforma: 'web' });
+  if (G.state !== 'nombre') return;
+  if (r && r.ok) {
+    try { localStorage.setItem('tizon.nombre', r.nombre || nombre); } catch (e) { }
+    Ranking.lista = r.ranking || []; Ranking.estado = 'ok';
+    G.rv = { cargando: false, error: false, nombre: r.nombre || nombre, posicion: r.posicion };
+    G.rk = null;
+    G.state = 'ranking'; G.timer = 0; Sound.play('clear');
+    return;
+  }
+  n.enviando = false; Sound.play('bump');
+  const err = r && r.error;
+  n.msg = err === 'nombre' ? 'ESE NOMBRE NO SE PUEDE USAR' : err === 'espera' ? 'ESPERA UN POCO Y VUELVE A PROBAR'
+    : err === 'imposible' ? 'EL RANKING NO HA ACEPTADO ESTA PUNTUACIÓN' : 'NO HAY CONEXIÓN CON EL RANKING';
+}
+function updateNombre() {
+  const n = G.nm; G.timer++;
+  if (n.enviando || G.timer < 15) return;
+  const mover = (df, dc) => {
+    if (n.f === 3 && dc) {   // en la fila de abajo se salta de botón en botón
+      const i = Math.max(0, Math.min(TECLAS.length - 1, TECLAS.findIndex(b => n.c >= b.c0 && n.c <= b.c1) + dc));
+      n.c = TECLAS[i].c0;
+    } else {
+      n.f = (n.f + df + 4) % 4;
+      n.c = (n.c + dc + 13) % 13;
+    }
+    Sound.play('tick');
+  };
+  if (inp.leftP) mover(0, -1); else if (inp.rightP) mover(0, 1);
+  if (inp.upP) mover(-1, 0); else if (inp.downP) mover(1, 0);
+  if (inp.tap && G.tapPos) {
+    const { x, y } = G.tapPos;
+    const c = Math.floor((x - TECLADO_X) / CELDA_W), f = Math.floor((y - TECLADO_Y) / CELDA_H);
+    if (c >= 0 && c < 13 && f >= 0 && f < 4) { n.f = f; n.c = f === 3 ? teclaEn(f, c).c0 : c; nombreActivar(); }
+    return;
+  }
+  if (inp.jumpP) nombreActivar();
+  else if (inp.spinP) nombreBorrar();
+  else if (inp.startP) nombreAceptar();
+}
+// Con teclado se escribe directamente; se captura antes que los controles del juego
+window.addEventListener('keydown', e => {
+  if (G.state !== 'nombre' || !G.nm || G.nm.enviando) return;
+  if (e.target && e.target.closest && e.target.closest('input, textarea, select')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  let usada = true;
+  if (e.key === 'Backspace') nombreBorrar();
+  else if (e.key === 'Escape') nombreSalir();
+  else if (e.key.length === 1 && /^[A-ZÑ0-9 .\-]$/.test(e.key.toUpperCase())) nombreEscribir(e.key.toUpperCase());
+  else usada = false;
+  if (usada) { e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
+
+function drawNombre() {
+  const n = G.nm;
+  ctx.fillStyle = '#120d08'; ctx.fillRect(0, 0, VW, VH);
+  drawTextOutlined(ctx, '¡ENTRAS EN EL RANKING!', VW / 2, 10, '#ffd25e', '#4a2608', 2, null);
+  drawText(ctx, 'PUNTOS ' + String(G.rk ? G.rk.puntos : G.score).padStart(7, '0'), VW / 2, 36, '#fbf0da', 1, null, 'center');
+  // casillas del nombre
+  const x0 = Math.round(VW / 2 - (NOMBRE_MAX * 14 - 4) / 2);
+  for (let i = 0; i < NOMBRE_MAX; i++) {
+    const x = x0 + i * 14, ch = n.texto[i];
+    if (ch && ch !== ' ') drawText(ctx, ch, x, 54, '#ffffff', 2, '#2b1a10');
+    if (i < n.texto.length) continue;    // la raya solo en las casillas libres (así un espacio no parece un guion bajo)
+    const cursor = i === n.texto.length && !n.enviando;
+    ctx.fillStyle = cursor ? ((G.t >> 4) & 1 ? '#ffd25e' : '#6b5330') : '#4a3a24';
+    ctx.fillRect(x, 70, 10, 2);
+  }
+  // teclado
+  for (let f = 0; f < 3; f++) for (let c = 0; c < 13; c++) {
+    const x = TECLADO_X + c * CELDA_W, y = TECLADO_Y + f * CELDA_H, sel = n.f === f && n.c === c;
+    if (sel) { ctx.fillStyle = '#f2b632'; ctx.fillRect(x + 2, y, CELDA_W - 4, CELDA_H - 2); }
+    drawText(ctx, TECLADO[f][c], x + CELDA_W / 2, y + 4, sel ? '#1b130a' : '#fbf0da', 1, sel ? null : '#2b1a10', 'center');
+  }
+  for (const b of TECLAS) {
+    const x = TECLADO_X + b.c0 * CELDA_W + 2, w = (b.c1 - b.c0 + 1) * CELDA_W - 4, y = TECLADO_Y + 3 * CELDA_H + 2, sel = n.f === 3 && n.c >= b.c0 && n.c <= b.c1;
+    ctx.fillStyle = sel ? '#f2b632' : '#2a2218'; ctx.fillRect(x, y, w, CELDA_H - 2);
+    drawText(ctx, b.t, x + w / 2, y + 4, sel ? '#1b130a' : (b.k === 'ok' ? '#ffd25e' : '#fbf0da'), 1, null, 'center');
+  }
+  const pie = TECLADO_Y + 4 * CELDA_H + 14;
+  if (n.enviando) drawText(ctx, 'ENVIANDO...', VW / 2, pie, '#9fe0ea', 1, null, 'center');
+  else if (n.msg) drawText(ctx, n.msg, VW / 2, pie, '#ffb08a', 1, null, 'center');
+  else {
+    drawText(ctx, 'A ESCRIBE · B BORRA · START ACEPTA', VW / 2, pie, '#b2a283', 1, null, 'center');
+    drawText(ctx, 'CON TECLADO PUEDES ESCRIBIR DIRECTAMENTE', VW / 2, pie + 12, '#b2a283', 1, null, 'center');
+  }
+}
+
+// ---------- Ver el ranking ----------
+function abrirRanking() {
+  G.rv = { cargando: true, error: false, nombre: '', posicion: null };
+  G.state = 'ranking'; G.timer = 0;
+  try { G.rv.nombre = localStorage.getItem('tizon.nombre') || ''; } catch (e) { }
+  Ranking.pedir().then(ok => { G.rv.cargando = false; G.rv.error = !ok; });
+}
+function drawRanking() {
+  const v = G.rv;
+  ctx.fillStyle = '#120d08'; ctx.fillRect(0, 0, VW, VH);
+  drawTextOutlined(ctx, 'RANKING', VW / 2, 8, '#ffd25e', '#4a2608', 2, null);
+  const centro = (t, y, col) => drawText(ctx, t, VW / 2, y, col || '#fbf0da', 1, null, 'center');
+  if (v.cargando) centro('CARGANDO...', 100, '#9fe0ea');
+  else if (v.error) centro('NO HAY CONEXIÓN CON EL RANKING', 100, '#ffb08a');
+  else if (!Ranking.lista.length) centro('TODAVÍA NO HAY PUNTUACIONES. ¡SÉ EL PRIMERO!', 100);
+  else {
+    const COLOR_PUESTO = ['#ffd25e', '#d9dde6', '#e0a070'];
+    for (const col of Ranking.lista.length > 10 ? [0, 1] : [0]) {
+      const x = col ? 200 : 14;
+      drawText(ctx, 'NOMBRE', x + 18, 32, '#b2a283', 1, null);
+      drawText(ctx, 'PUNTOS', x + 116, 32, '#b2a283', 1, null, 'right');
+      drawText(ctx, 'NIVEL', x + 122, 32, '#b2a283', 1, null);
+      ctx.drawImage(A.sock, x + 156, 29);
+    }
+    Ranking.lista.slice(0, 20).forEach((r, i) => {
+      const x = i < 10 ? 14 : 200, y = 46 + (i % 10) * 13;
+      const yo = v.nombre && r.nombre === v.nombre;
+      if (yo && ((G.t >> 4) & 1)) { ctx.fillStyle = 'rgba(242,182,50,0.18)'; ctx.fillRect(x - 4, y - 3, 182, 13); }
+      const col = yo ? '#ffd25e' : '#fbf0da';
+      drawText(ctx, String(r.pos), x + 10, y, COLOR_PUESTO[i] || '#b2a283', 1, null, 'right');
+      drawText(ctx, r.nombre, x + 18, y, col, 1, null);
+      drawText(ctx, String(r.puntos).padStart(7, '0'), x + 116, y, col, 1, null, 'right');
+      drawText(ctx, r.final ? 'FIN' : Math.ceil(r.nivel / 5) + '-' + ((r.nivel - 1) % 5 + 1), x + 122, y, col, 1, null);
+      drawText(ctx, String(r.calcetines), x + 174, y, col, 1, null, 'right');
+    });
+  }
+  if (v.posicion) centro(v.posicion <= 20 ? '¡ESTÁS EN EL PUESTO ' + v.posicion + '!' : 'ESTÁS EN EL PUESTO ' + v.posicion, 182, '#ffd25e');
+  if (G.timer > 20 && ((G.t >> 5) & 1)) centro('PULSA PARA VOLVER', 200, '#f2b632');
+}
 
 function updateParts() {
   for (const b of bumps) b.t++;
@@ -6537,14 +6772,14 @@ function drawTitle() {
   drawTextOutlined(ctx, 'EN LA DEHESA', VW / 2, 84, '#fbf0da', '#4a2608', 2, '#2b1a10');
   const items = titleItems();
   items.forEach((it, k) => {
-    const label = it === 'continue' ? 'CONTINUAR · ' + LEVELS[Save.data.level].name + (Save.data.cp ? ' (CASETA)' : '') : 'NUEVA PARTIDA';
+    const label = it === 'continue' ? 'CONTINUAR · ' + LEVELS[Save.data.level].name + (Save.data.cp ? ' (CASETA)' : '') : it === 'ranking' ? 'RANKING' : 'NUEVA PARTIDA';
     const y = 110 + k * 13, sel = k === G.menu;
     drawText(ctx, label, VW / 2, y, sel ? '#ffd25e' : '#fbf0da', 1, '#2b1a10', 'center');
     if (sel && ((G.t >> 4) & 1)) drawText(ctx, '>', Math.round(VW / 2 - textWidth(label) / 2 - 12), y, '#ffd25e', 1, '#2b1a10');
   });
   if (G.best > 0) drawText(ctx, 'MEJOR PUNTUACIÓN ' + String(G.best).padStart(7, '0'), VW / 2, 112 + items.length * 13 + 6, '#fbf0da', 1, '#2b1a10', 'center');
 }
-function titleItems() { return Save.data ? ['continue', 'new'] : ['new']; }
+function titleItems() { return (Save.data ? ['continue', 'new'] : ['new']).concat(RANKING_URL ? ['ranking'] : []); }
 function drawEnding() {
   ctx.fillStyle = '#120d08'; ctx.fillRect(0, 0, VW, VH);
   drawTextOutlined(ctx, '¡ENHORABUENA!', VW / 2, 40, '#ffd25e', '#4a2608', 2, null);
@@ -6556,7 +6791,8 @@ function drawEnding() {
   drawText(ctx, 'CALCETINES ' + socks + '/' + total, VW / 2, 128, '#ffffff', 1, null, 'center');
   drawText(ctx, 'PUNTOS ' + String(G.score).padStart(7, '0'), VW / 2, 142, '#ffffff', 1, null, 'center');
   drawText(ctx, 'GRACIAS POR LOS DESAYUNOS, EDUARDO', VW / 2, 160, '#ffb08a', 1, null, 'center');
-  if (G.timer > 90 && ((G.t >> 5) & 1)) drawText(ctx, 'PULSA PARA VOLVER AL INICIO', VW / 2, 182, '#f2b632', 1, null, 'center');
+  if (G.timer > 90 && ((G.t >> 5) & 1)) drawText(ctx, entraEnRanking() ? 'PULSA PARA SEGUIR' : 'PULSA PARA VOLVER AL INICIO', VW / 2, 182, '#f2b632', 1, null, 'center');
+  drawEstadoRanking(198);
 }
 function drawMap() {
   const m = G.map, w = Math.floor(m.sel / 5), M = MUNDOS[w];
@@ -6636,6 +6872,7 @@ function drawGameOver() {
   ctx.fillStyle = '#120d08'; ctx.fillRect(0, 0, VW, VH);
   drawText(ctx, 'FIN DE LA PARTIDA', VW / 2, 90, '#f2b632', 2, '#5a3510', 'center');
   drawText(ctx, 'PUNTOS ' + String(G.score).padStart(7, '0'), VW / 2, 120, '#fbf0da', 1, null, 'center');
+  drawEstadoRanking(150);
 }
 
 function render() {
@@ -6647,6 +6884,8 @@ function render() {
     case 'intro': drawIntro(); return;
     case 'ending': drawEnding(); return;
     case 'gameover': drawGameOver(); return;
+    case 'nombre': drawNombre(); return;
+    case 'ranking': drawRanking(); return;
   }
   drawWorld(); drawHUD();
   if (G.state === 'pause') drawPause();
@@ -6710,6 +6949,12 @@ document.getElementById('btnSalir').addEventListener('click', () => {
     } else nota.hidden = !nota.hidden;
   });
 })();
+
+// Aviso del ranking en el apartado de la partida guardada (solo en la web publicada)
+if (RANKING_URL) {
+  document.getElementById('enlaceRanking').href = RANKING_URL.replace(/api\.php$/, '');
+  document.getElementById('notaRanking').hidden = false;
+}
 
 const pad = document.getElementById('pad'), btnTouch = document.getElementById('btnTouch');
 function showPad(on) { pad.hidden = !on; document.getElementById('stage').classList.toggle('con-mandos', on); document.getElementById('pauseBtn').hidden = !on; if (on) hideHint(); btnTouch.setAttribute('aria-pressed', String(on)); }

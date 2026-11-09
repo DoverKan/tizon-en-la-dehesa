@@ -12,7 +12,8 @@
 
 extends Node2D
 ## Dibuja la pantalla de inicio, la ayuda, el bestiario, las opciones, el mapa de cada
-## mundo, la presentación de cada nivel, el menú de pausa, el fin de partida y el final.
+## mundo, la presentación de cada nivel, el menú de pausa, el fin de partida, el final,
+## la pantalla para escribir el nombre y el ranking.
 
 const VW := 384
 const VH := 224
@@ -52,6 +53,7 @@ const AYUDA := [
 		["", "LA PARTIDA SE GUARDA SOLA AL TOCAR LA CASETA Y AL PASAR UN NIVEL."],
 		["", "EN EL MAPA PUEDES VOLVER A JUGAR LOS NIVELES QUE YA HAS PASADO."],
 		["", "EL CÓDIGO DE PARTIDA (21 LETRAS Y NÚMEROS) SIRVE PARA SEGUIR EN OTRO DISPOSITIVO O EN LA VERSIÓN WEB."],
+		["", "SI AL ACABAR LA PARTIDA TU PUNTUACIÓN ENTRA EN EL RANKING, ESCRIBE TU NOMBRE. LAS PARTIDAS CARGADAS CON CÓDIGO NO CUENTAN."],
 		["", "EN PANTALLA TÁCTIL: CRUCETA O JOYSTICK A LA IZQUIERDA. A SALTA, B DA LA VUELTA, X E Y CORREN."],
 	]],
 ]
@@ -83,8 +85,13 @@ func _draw() -> void:
 			draw_rect(Rect2(0, 0, VW, VH), OSCURO)
 			FuentePixel.dibujar(self, "FIN DE LA PARTIDA", Vector2(VW / 2.0, 90), ORO, 2, Color("5a3510"), FuentePixel.CENTRO)
 			FuentePixel.dibujar(self, "PUNTOS %07d" % Juego.puntos, Vector2(VW / 2.0, 120), CREMA, 1, FuentePixel.SIN_SOMBRA, FuentePixel.CENTRO)
+			_estado_ranking(150)
 		"final":
 			_final(t)
+		"nombre":
+			_nombre(t)
+		"ranking":
+			_ranking(t)
 
 
 func _centro(texto: String, y: float, c: Color = CREMA, escala := 1, sombra: Color = FuentePixel.SOMBRA) -> void:
@@ -124,6 +131,8 @@ func _titulo(t: int) -> void:
 					etiqueta = "NUEVA PARTIDA"
 				"borrar":
 					etiqueta = "EMPEZAR DE CERO"
+				"ranking":
+					etiqueta = "RANKING"
 				"codigo":
 					etiqueta = "CÓDIGO DE PARTIDA"
 				"ayuda":
@@ -379,4 +388,108 @@ func _final(t: int) -> void:
 	_centro("PUNTOS %07d" % Juego.puntos, 142, Color.WHITE, 1, FuentePixel.SIN_SOMBRA)
 	_centro("GRACIAS POR LOS DESAYUNOS, EDUARDO", 160, Color("ffb08a"), 1, FuentePixel.SIN_SOMBRA)
 	if principal.temporizador > 90 and ((t >> 5) & 1) != 0:
-		_centro("PULSA PARA VOLVER AL INICIO", 182, ORO, 1, FuentePixel.SIN_SOMBRA)
+		_centro("PULSA PARA SEGUIR" if principal.ranking.entra() else "PULSA PARA VOLVER AL INICIO", 182, ORO, 1, FuentePixel.SIN_SOMBRA)
+	_estado_ranking(198)
+
+
+# ---------------------------------------------------------- ranking
+## Debajo del fin de partida y del final: si entra en el ranking, si no hay conexión...
+func _estado_ranking(y: float) -> void:
+	var r: Node = principal.ranking
+	var texto := ""
+	if Juego.con_codigo and Juego.puntos > 0:
+		texto = "LAS PARTIDAS CARGADAS CON CÓDIGO NO ENTRAN EN EL RANKING"
+	elif r.datos != null and r.estado == "cargando":
+		texto = "MIRANDO EL RANKING..."
+	elif r.datos != null and r.estado == "error":
+		texto = "SIN CONEXIÓN CON EL RANKING"
+	elif r.entra():
+		texto = "¡ENTRAS EN EL RANKING!"
+	if texto != "":
+		_centro(texto, y, AMARILLO if r.entra() else CELESTE, 1, FuentePixel.SIN_SOMBRA)
+
+
+func _nombre(t: int) -> void:
+	var p: Node = principal
+	draw_rect(Rect2(0, 0, VW, VH), OSCURO)
+	FuentePixel.dibujar_contorno(self, "¡ENTRAS EN EL RANKING!", VW / 2.0, 10, AMARILLO, Color("4a2608"), 2)
+	var puntos: int = p.ranking.datos.puntos if p.ranking.datos != null else Juego.puntos
+	_centro("PUNTOS %07d" % puntos, 36, CREMA, 1, FuentePixel.SIN_SOMBRA)
+	# casillas del nombre (la raya solo en las libres, así un espacio no parece un guion bajo)
+	var maximo: int = p.ranking.NOMBRE_MAX
+	var x0 := roundf(VW / 2.0 - (maximo * 14 - 4) / 2.0)
+	for i in maximo:
+		var x := x0 + i * 14
+		if i < p.nombre.length():
+			FuentePixel.dibujar(self, p.nombre[i], Vector2(x, 54), Color.WHITE, 2)
+			continue
+		var cursor: bool = i == p.nombre.length() and not p.enviando
+		var c := (AMARILLO if ((t >> 4) & 1) != 0 else Color("6b5330")) if cursor else Color("4a3a24")
+		draw_rect(Rect2(x, 70, 10, 2), c)
+	# teclado
+	for f in 3:
+		for c in 13:
+			var x: float = p.TECLADO_X + c * p.CELDA_W
+			var y: float = p.TECLADO_Y + f * p.CELDA_H
+			var sel: bool = p.tecla == Vector2i(c, f)
+			if sel:
+				draw_rect(Rect2(x + 2, y, p.CELDA_W - 4, p.CELDA_H - 2), ORO)
+			FuentePixel.dibujar(self, p.TECLADO[f][c], Vector2(x + p.CELDA_W / 2.0, y + 4), Color("1b130a") if sel else CREMA, 1,
+				FuentePixel.SIN_SOMBRA if sel else FuentePixel.SOMBRA, FuentePixel.CENTRO)
+	for b in p.TECLAS:
+		var x: float = p.TECLADO_X + b[2] * p.CELDA_W + 2
+		var w: float = (b[3] - b[2] + 1) * p.CELDA_W - 4
+		var y: float = p.TECLADO_Y + 3 * p.CELDA_H + 2
+		var sel: bool = p.tecla.y == 3 and p.tecla.x >= b[2] and p.tecla.x <= b[3]
+		draw_rect(Rect2(x, y, w, p.CELDA_H - 2), ORO if sel else Color("2a2218"))
+		var col := Color("1b130a") if sel else (AMARILLO if b[0] == "ok" else CREMA)
+		FuentePixel.dibujar(self, b[1], Vector2(x + w / 2.0, y + 4), col, 1, FuentePixel.SIN_SOMBRA, FuentePixel.CENTRO)
+	var pie: float = p.TECLADO_Y + 4 * p.CELDA_H + 14
+	if p.enviando:
+		_centro("ENVIANDO...", pie, CELESTE, 1, FuentePixel.SIN_SOMBRA)
+	elif p.nombre_aviso != "":
+		_centro(p.nombre_aviso, pie, Color("ffb08a"), 1, FuentePixel.SIN_SOMBRA)
+	else:
+		_centro("A ESCRIBE · B BORRA · START ACEPTA", pie, Color("b2a283"), 1, FuentePixel.SIN_SOMBRA)
+		if not OS.has_feature("mobile"):
+			_centro("CON TECLADO PUEDES ESCRIBIR DIRECTAMENTE", pie + 12, Color("b2a283"), 1, FuentePixel.SIN_SOMBRA)
+
+
+func _ranking(t: int) -> void:
+	var p: Node = principal
+	var r: Node = p.ranking
+	draw_rect(Rect2(0, 0, VW, VH), OSCURO)
+	FuentePixel.dibujar_contorno(self, "RANKING", VW / 2.0, 8, AMARILLO, Color("4a2608"), 2)
+	if r.estado == "cargando":
+		_centro("CARGANDO...", 100, CELESTE, 1, FuentePixel.SIN_SOMBRA)
+	elif r.estado == "error":
+		_centro("NO HAY CONEXIÓN CON EL RANKING", 100, Color("ffb08a"), 1, FuentePixel.SIN_SOMBRA)
+	elif r.lista.is_empty():
+		_centro("TODAVÍA NO HAY PUNTUACIONES. ¡SÉ EL PRIMERO!", 100, CREMA, 1, FuentePixel.SIN_SOMBRA)
+	else:
+		var gris := Color("b2a283")
+		for col in ([0, 1] if r.lista.size() > 10 else [0]):
+			var x := 200.0 if col == 1 else 14.0
+			FuentePixel.dibujar(self, "NOMBRE", Vector2(x + 18, 32), gris, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, "PUNTOS", Vector2(x + 116, 32), gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, "NIVEL", Vector2(x + 122, 32), gris, 1, FuentePixel.SIN_SOMBRA)
+			draw_texture(_calcetin, Vector2(x + 156, 29))
+		var colores := [AMARILLO, Color("d9dde6"), Color("e0a070")]
+		for i in mini(20, r.lista.size()):
+			var f: Dictionary = r.lista[i]
+			var x := 14.0 if i < 10 else 200.0
+			var y := 46.0 + (i % 10) * 13
+			var yo: bool = p.ranking_nombre != "" and f.nombre == p.ranking_nombre
+			if yo and ((t >> 4) & 1) != 0:
+				draw_rect(Rect2(x - 4, y - 3, 182, 13), Color(ORO, 0.18))
+			var c := AMARILLO if yo else CREMA
+			FuentePixel.dibujar(self, str(f.pos), Vector2(x + 10, y), colores[i] if i < 3 else gris, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			FuentePixel.dibujar(self, f.nombre, Vector2(x + 18, y), c, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, "%07d" % f.puntos, Vector2(x + 116, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+			var nv: int = f.nivel
+			FuentePixel.dibujar(self, "FIN" if f.final else "%d-%d" % [(nv - 1) / 5 + 1, (nv - 1) % 5 + 1], Vector2(x + 122, y), c, 1, FuentePixel.SIN_SOMBRA)
+			FuentePixel.dibujar(self, str(f.calcetines), Vector2(x + 174, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
+	if p.ranking_puesto > 0:
+		_centro(("¡ESTÁS EN EL PUESTO %d!" if p.ranking_puesto <= 20 else "ESTÁS EN EL PUESTO %d") % p.ranking_puesto, 182, AMARILLO, 1, FuentePixel.SIN_SOMBRA)
+	if p.temporizador > 20 and ((t >> 5) & 1) != 0:
+		_centro("PULSA PARA VOLVER", 200, ORO, 1, FuentePixel.SIN_SOMBRA)

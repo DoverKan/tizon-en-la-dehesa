@@ -42,6 +42,7 @@ Además:
 - **Ayuda, bestiario y opciones.** El bestiario reúne 38 personajes y objetos, con su dibujo y para qué sirven.
 - **Partida guardada** automáticamente al tocar la caseta y al pasar un nivel.
 - **Código de partida** de 21 caracteres para seguir en otro dispositivo. Es el mismo que usa la versión web del juego.
+- **Ranking de jugadores**, el mismo en la web y en la app. Al acabar la partida, si la puntuación entra entre las 20 mejores, se escribe un nombre como en las recreativas. Se puede ver en [doverkan.com/tizon_ranking](https://www.doverkan.com/tizon_ranking/).
 - **Mandos táctiles**: cruceta o joystick, y los botones A, B, X e Y en rombo.
 - Se exporta a **Windows, Linux, macOS, Android, iOS y web**.
 

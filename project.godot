@@ -8,16 +8,12 @@
 
 config_version=5
 
-[animation]
-
-compatibility/default_parent_skeleton_in_mesh_instance_3d=true
-
 [application]
 
 config/name="Tizón en la Dehesa"
 config/description="Plataformas al estilo de los clásicos de 16 bits: Tizón, un schnauzer mini, recorre la dehesa extremeña."
 run/main_scene="res://escenas/principal.tscn"
-config/features=PackedStringArray("4.7", "GL Compatibility")
+config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.png"
 
 [autoload]
