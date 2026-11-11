@@ -6,7 +6,7 @@
 #  Qué es:   Dibujo de los menús, la ayuda, el bestiario, las opciones, el mapa y la pausa
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.2 (noviembre de 2026)
+#  Versión:  1.3 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -513,7 +513,9 @@ func _ranking(t: int) -> void:
 			var nv: int = f.nivel
 			FuentePixel.dibujar(self, "FIN" if f.final else "%d-%d" % [(nv - 1) / 5 + 1, (nv - 1) % 5 + 1], Vector2(x + RK_NIVEL, y), c, 1, FuentePixel.SIN_SOMBRA)
 			FuentePixel.dibujar(self, str(f.calcetines), Vector2(x + RK_CALCETINES, y), c, 1, FuentePixel.SIN_SOMBRA, FuentePixel.DERECHA)
-	if p.ranking_puesto > 0:
+	if p.ranking_puesto > 0 and not p.ranking_mejor:
+		_centro("TU MEJOR PUNTUACIÓN SIGUE EN EL PUESTO %d" % p.ranking_puesto, 182, AMARILLO, 1, FuentePixel.SIN_SOMBRA)
+	elif p.ranking_puesto > 0:
 		_centro(("¡ESTÁS EN EL PUESTO %d!" if p.ranking_puesto <= 20 else "ESTÁS EN EL PUESTO %d") % p.ranking_puesto, 182, AMARILLO, 1, FuentePixel.SIN_SOMBRA)
 	if p.temporizador > 20 and ((t >> 5) & 1) != 0:
 		_centro("PULSA PARA VOLVER", 200, ORO, 1, FuentePixel.SIN_SOMBRA)

@@ -7,7 +7,7 @@
   Autor:    Nacho Cano (DoverKan)
   Código:   https://github.com/DoverKan/tizon-en-la-dehesa
   Jugar:    https://doverkan.github.io/tizon-en-la-dehesa/
-  Versión:  1.2 (noviembre de 2026)
+  Versión:  1.3 (noviembre de 2026)
   © 2026 Nacho Cano
   ============================================================================
 --><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-J0WR95LLC3"></script><script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-J0WR95LLC3');</script><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>window.TIZON_RANKING = "https://www.doverkan.com/tizon_ranking/api.php";</script><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
@@ -273,7 +273,7 @@ button.chip.danger-solid { color: #1b130a; background: #e8826a; border-color: #e
         </div>
         <p class="note" id="codeMsg" role="status"></p>
       </form>
-      <p class="note" id="notaRanking" hidden>Hay un <a id="enlaceRanking" href="#" target="_blank" rel="noopener">ranking de jugadores</a>: al acabar una partida, si tu puntuación entra, el juego te pide un nombre. Las partidas cargadas con un código no cuentan.</p>
+      <p class="note" id="notaRanking" hidden>Hay un <a id="enlaceRanking" href="#" target="_blank" rel="noopener">ranking de jugadores</a> con la mejor puntuación de cada uno: al acabar una partida, si tu puntuación entra, el juego te pide un nombre. Las partidas cargadas con un código no cuentan.</p>
       <div class="reset">
         <button class="chip danger" id="btnReset" type="button">Empezar de cero</button>
         <div class="reset-confirm" id="resetConfirm" hidden>
@@ -6161,7 +6161,8 @@ async function nombreAceptar() {
   if (r && r.ok) {
     try { localStorage.setItem('tizon.nombre', r.nombre || nombre); } catch (e) { }
     Ranking.lista = r.ranking || []; Ranking.estado = 'ok';
-    G.rv = { cargando: false, error: false, nombre: r.nombre || nombre, posicion: r.posicion };
+    // en el ranking sale la mejor puntuación de cada jugador: «mejor» dice si es esta partida
+    G.rv = { cargando: false, error: false, nombre: r.nombre || nombre, posicion: r.posicion, mejor: r.mejor !== false, record: r.record };
     G.rk = null;
     G.state = 'ranking'; G.timer = 0; Sound.play('clear');
     analitica('ranking_enviado', { puesto: r.posicion || 0 });
@@ -6285,7 +6286,8 @@ function drawRanking() {
       drawText(ctx, String(r.calcetines), x + RK_CALCETINES, y, col, 1, null, 'right');
     });
   }
-  if (v.posicion) centro(v.posicion <= 20 ? '¡ESTÁS EN EL PUESTO ' + v.posicion + '!' : 'ESTÁS EN EL PUESTO ' + v.posicion, 182, '#ffd25e');
+  if (v.posicion && v.mejor === false) centro('TU MEJOR PUNTUACIÓN SIGUE EN EL PUESTO ' + v.posicion, 182, '#ffd25e');
+  else if (v.posicion) centro(v.posicion <= 20 ? '¡ESTÁS EN EL PUESTO ' + v.posicion + '!' : 'ESTÁS EN EL PUESTO ' + v.posicion, 182, '#ffd25e');
   if (G.timer > 20 && ((G.t >> 5) & 1)) centro('PULSA PARA VOLVER', 200, '#f2b632');
 }
 
@@ -6810,7 +6812,7 @@ function drawHUD() {
 }
 
 // Versión del juego que se ve en la pantalla de inicio (la misma que en Godot)
-const VERSION_JUEGO = '1.2';
+const VERSION_JUEGO = '1.3';
 function drawTitle() {
   if (!L) loadLevel();
   const scroll = G.t * 0.35;

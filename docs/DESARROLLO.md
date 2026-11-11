@@ -85,7 +85,7 @@ El código guarda hasta 63 vidas y 1.048.575 puntos; por encima de eso se queda 
 
 ## Ranking de jugadores
 
-Al acabar la partida (fin de partida o tras vencer a la Urraca), si la puntuación entra entre las 20 mejores, el juego pide un nombre de hasta 8 letras con un teclado en pantalla, como en las recreativas. Se maneja con la cruceta y A, tocando las letras o escribiendo con el teclado. En el menú de inicio, **Ranking** enseña las 20 mejores puntuaciones; como en las recreativas, un mismo nombre puede salir varias veces.
+Al acabar la partida (fin de partida o tras vencer a la Urraca), si la puntuación entra entre las 20 mejores, el juego pide un nombre de hasta 8 letras con un teclado en pantalla, como en las recreativas. Se maneja con la cruceta y A, tocando las letras o escribiendo con el teclado. En el menú de inicio, **Ranking** enseña los 20 mejores jugadores, cada uno con su mejor puntuación (se guardan todas las partidas, y en el panel se ven todas). Si una partida no supera el récord de ese nombre, el juego avisa de que su mejor puntuación sigue en su puesto.
 
 - Lo hace `scripts/ranking.gd`; las pantallas están en `principal.gd` (estados `nombre` y `ranking`) y en `pantalla.gd`.
 - Habla con la misma API que la versión web: `https://www.doverkan.com/tizon_ranking/api.php`.

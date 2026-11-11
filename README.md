@@ -42,7 +42,7 @@ Además:
 - **Ayuda, bestiario y opciones.** El bestiario reúne 38 personajes y objetos, con su dibujo y para qué sirven.
 - **Partida guardada** automáticamente al tocar la caseta y al pasar un nivel.
 - **Código de partida** de 21 caracteres para seguir en otro dispositivo. Es el mismo que usa la versión web del juego.
-- **Ranking de jugadores**, el mismo en la web y en la app. Al acabar la partida, si la puntuación entra entre las 20 mejores, se escribe un nombre como en las recreativas. Se puede ver en [doverkan.com/tizon_ranking](https://www.doverkan.com/tizon_ranking/).
+- **Ranking de jugadores**, el mismo en la web y en la app. Sale la mejor puntuación de cada jugador. Al acabar la partida, si la puntuación entra entre las 20 mejores, se escribe un nombre como en las recreativas. Se puede ver en [doverkan.com/tizon_ranking](https://www.doverkan.com/tizon_ranking/).
 - **Mandos táctiles**: cruceta o joystick, y los botones A, B, X e Y en rombo. Con el pulgar entre dos botones se pulsan los dos (entre A y X, salto corriendo).
 - Se exporta a **Windows, Linux, macOS, Android, iOS y web**.
 
@@ -108,6 +108,8 @@ github.bat    menú para subir y descargar los cambios de GitHub (github.ps1)
 
 ## Versiones
 
+- **1.3** (noviembre de 2026)
+  - Ranking: sale una sola vez cada jugador, con su mejor puntuación. Si una partida no supera tu récord, el juego te dice en qué puesto sigue tu mejor puntuación.
 - **1.2** (noviembre de 2026)
   - Móvil y tableta: un dedo puesto entre dos botones pulsa los dos (con el pulgar entre A y X se salta corriendo) y se puede deslizar de un botón a otro. Un toque corto en A ya da casi el salto entero. En la versión de Godot los botones son más grandes.
   - Para todos: un poco más de margen para saltar justo al salir de un borde o si se pulsa un pelín antes de caer.

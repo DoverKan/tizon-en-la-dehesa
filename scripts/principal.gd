@@ -6,7 +6,7 @@
 #  Qué es:   Escena principal: menús, mapa del mundo, presentación de niveles y pausa
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.2 (noviembre de 2026)
+#  Versión:  1.3 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -51,6 +51,7 @@ var enviando := false
 var ranking_cargando := false
 var ranking_nombre := ""           # nombre que se resalta en el ranking
 var ranking_puesto := 0            # puesto que acaba de conseguir (0 si no viene de enviar)
+var ranking_mejor := true          # si la partida enviada es su mejor puntuación (en el ranking sale la mejor de cada jugador)
 var _tecla_escrita := false
 # huevo de pascua: código Konami (↑ ↑ ↓ ↓ ← → ← → B A) para el modo piloto
 const KONAMI := ["arriba", "arriba", "abajo", "abajo", "izquierda", "derecha", "izquierda", "derecha", "vuelta", "saltar"]
@@ -642,6 +643,7 @@ func _al_enviar(r) -> void:
 		Juego.guardar_opciones()
 		ranking_nombre = Juego.opciones.nombre
 		ranking_puesto = int(r.get("posicion", 0)) if r.get("posicion") != null else 0
+		ranking_mejor = r.get("mejor", true) != false
 		ranking_cargando = false
 		_cambiar("ranking")
 		Sonido.tocar("nivel_superado")
