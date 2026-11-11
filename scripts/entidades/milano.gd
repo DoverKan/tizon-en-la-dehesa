@@ -6,16 +6,16 @@
 #  Qué es:   Milano: avisa y se deja caer si Tizón pasa por debajo
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
 extends Pieza
 ## Milano: vigila quieto en lo alto. Cuando Tizón pasa justo por debajo, tiembla y grazna (aviso)
-## y luego se deja caer en vertical: basta con apartarse un paso. Después se va volando hacia
-## atrás. Se puede pisar.
+## y luego se deja caer en vertical hasta salir por abajo de la pantalla: basta con apartarse un
+## paso. Se puede pisar.
 
-var estado := "vigila"     # vigila, aviso, picado, se_va
+var estado := "vigila"     # vigila, aviso, picado
 var y0 := 0.0
 var x_aviso := 0.0
 var vx := 0.0
@@ -56,16 +56,9 @@ func paso(_delta: float) -> void:
 				estado = "picado"
 				reloj = 0
 		"picado":
+			# cae en vertical hasta salir por abajo de la pantalla
 			position.y += vy
-			reloj += 1
-			if reloj > 80:
-				estado = "se_va"
-				vx = -1.4
-				dir = -1
-		_:
-			vy = maxf(-2.0, vy - 0.08)
-			position += Vector2(vx, vy)
-			if not nivel.en_pantalla(caja(), 48.0):
+			if position.y > nivel.cam.y + nivel.VH + 16.0:
 				quitar()
 				return
 	if estado == "picado":

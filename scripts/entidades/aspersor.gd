@@ -6,7 +6,7 @@
 #  Qué es:   Aspersor de los jardines del MEIAC: lanza a Tizón hacia arriba
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 

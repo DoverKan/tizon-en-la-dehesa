@@ -6,7 +6,7 @@
 #  Qué es:   Estado de la partida (autoload «Juego»): niveles, guardado, código y opciones
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -52,6 +52,7 @@ var opciones := {"efectos": true, "musica": true, "tactil": "auto", "mando": "cr
 # para el ranking: fotogramas jugados y si la partida viene de un código (esas no cuentan)
 var jugado := 0
 var con_codigo := false
+var salto_tactil := false    # el salto o la vuelta que se pulsa ahora viene de los botones táctiles
 
 
 func _ready() -> void:

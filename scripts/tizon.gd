@@ -6,7 +6,7 @@
 #  Qué es:   Tizón, el protagonista: movimiento, saltos, poderes y globo
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -59,6 +59,7 @@ var en_suelo := false
 var coyote := 0
 var buffer_salto := 0
 var buffer_vuelta := 0
+var min_mantener := 0           # fotogramas en que el salto sube como si se mantuviera el botón
 var invencible := 0
 var medidor := 0
 var anim := 0.0
@@ -168,15 +169,15 @@ func paso(delta: float) -> void:
 
 	# salto con margen (coyote) y búfer
 	if _recien("saltar"):
-		buffer_salto = 6
+		buffer_salto = 8
 	elif buffer_salto > 0:
 		buffer_salto -= 1
 	if _recien("vuelta"):
-		buffer_vuelta = 6
+		buffer_vuelta = 8
 	elif buffer_vuelta > 0:
 		buffer_vuelta -= 1
 	if en_suelo:
-		coyote = 6
+		coyote = 8
 	elif coyote > 0:
 		coyote -= 1
 	if (buffer_salto > 0 or buffer_vuelta > 0) and coyote > 0 and globo.is_empty():
@@ -188,8 +189,12 @@ func paso(delta: float) -> void:
 		buffer_vuelta = 0
 		en_suelo = false
 		plataforma = null
+		# con los botones táctiles un toque corto ya da casi el salto entero (como si se mantuviera 16 fotogramas)
+		min_mantener = 16 if Juego.salto_tactil else 0
 		Sonido.tocar("vuelta" if vuelta else "saltar")
-	var manteniendo := _pulsado("saltar") or (girando and _pulsado("vuelta"))
+	if min_mantener > 0:
+		min_mantener -= 1
+	var manteniendo := _pulsado("saltar") or (girando and _pulsado("vuelta")) or min_mantener > 0
 	if not globo.is_empty():
 		# colgado de un globo: sube despacio; con ↓ lo suelta
 		velocity.y = move_toward(velocity.y, -SUBIDA_GLOBO, 7.2)

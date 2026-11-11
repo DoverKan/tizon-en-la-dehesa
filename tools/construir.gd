@@ -6,7 +6,7 @@
 #  Qué es:   Constructor: genera el TileSet y las escenas a partir de los mapas de texto
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 

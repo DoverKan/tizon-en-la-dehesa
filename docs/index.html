@@ -7,7 +7,7 @@
   Autor:    Nacho Cano (DoverKan)
   Código:   https://github.com/DoverKan/tizon-en-la-dehesa
   Jugar:    https://doverkan.github.io/tizon-en-la-dehesa/
-  Versión:  1.0 (noviembre de 2026)
+  Versión:  1.2 (noviembre de 2026)
   © 2026 Nacho Cano
   ============================================================================
 --><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-J0WR95LLC3"></script><script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-J0WR95LLC3');</script><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>window.TIZON_RANKING = "https://www.doverkan.com/tizon_ranking/api.php";</script><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
@@ -3999,37 +3999,37 @@ const LEVEL_MEIAC = {
       '#########...[[[..#######',
       '##....................##',
       '##.................!..##',
-      '##........]].....oo...##',
+      '##........]]]]...oo...##',
       '##....................##',
       '##....................##',
       '##.............#########',
       '##....................##',
       '##..!.................##',
-      '##........[[..........##',
+      '##.......[[[[.........##',
       '##..oo................##',
       '##..e.................##',
       '#######...............##',
       '##....................##',
       '##.................!..##',
-      '##........]].....oo...##',
+      '##.......]]]]....oo...##',
       '##....................##',
       '##....................##',
       '##.............#########',
       '##........F...........##',
       '##..!.................##',
-      '##........[[..........##',
+      '##.......[[[[.........##',
       '##..oo................##',
       '##....................##',
       '#######...............##',
       '##....................##',
       '##.................!..##',
-      '##........]]......oo..##',
+      '##.......]]]].....oo..##',
       '##....................##',
       '##................e...##',
       '##.............#########',
       '##........oo..........##',
-      '##....................##',
-      '##.1......[[..........##',
+      '##.................!..##',
+      '##.1.....[[[[.........##',
       '##.TT...........Y.....##',
       '##.TT.................##',
       '########################',
@@ -4299,12 +4299,12 @@ const LEVEL_CIELO = {
       '................................',
       '................................',
       '................................',
-      '.............................F..',
       '................................',
+      '.............................F..',
       '...........ooo.........ooo......',
       '................................',
-      '..@.............v...........v...',
-      '########..----........----......',
+      '..@.............................',
+      '########..----..v.....----..v...',
       '########........................',
       '########........................',
       '########........................',
@@ -4314,14 +4314,14 @@ const LEVEL_CIELO = {
     ],
     [
       '................................',
-      '................d...............',
+      '................................',
       '................................',
       '................................',
       '....................F...........',
       '................................',
       '........ooo.....................',
       '................................',
-      '...............----.............',
+      '..............-----.............',
       '..----..v............v.....----.',
       '................................',
       '................................',
@@ -4350,16 +4350,16 @@ const LEVEL_CIELO = {
     ],
     [
       '................................',
-      '..........................d.....',
+      '................................',
       '................................',
       '................................',
       '................................',
       '................................',
       '................................',
       '.........................ooo....',
-      '.---..............v.............',
+      '.---............................',
       '...........X....................',
-      '.......#########........------..',
+      '.......#########..v.....------..',
       '.......#########................',
       '.......#########................',
       '.......#########................',
@@ -4369,14 +4369,14 @@ const LEVEL_CIELO = {
     [
       '................................',
       '................................',
+      '................................',
       '.................F..............',
-      '................---.............',
-      '.....................ooo........',
+      '................---..ooo........',
       '................................',
       '......ooo.......................',
-      '.................---............',
-      '...........v..........v.........',
-      '......---...................---.',
+      '................................',
+      '................----..v.........',
+      '......----.v................---.',
       'v...............................',
       '................................',
       '................................',
@@ -4387,7 +4387,7 @@ const LEVEL_CIELO = {
     [
       '................................',
       '................................',
-      '........d.......................',
+      '................................',
       '................................',
       '................................',
       '................................',
@@ -4395,8 +4395,8 @@ const LEVEL_CIELO = {
       '................................',
       '....................ooo.........',
       '................................',
-      '.---.........v...........v......',
-      '.......----........---..........',
+      '.---..........................--',
+      '.......----..v.....----..v......',
       '................................',
       '................................',
       '................................',
@@ -4475,9 +4475,9 @@ const LEVEL_MERIDA = {
       '............|..|..|.............',
       '............|..|..|.............',
       '.........|..|..|..|..|..........',
-      '.........|..|..|..|..|..........',
-      '.........|..|..|..|..|..........',
-      '...X.....|..|..|..|..|...s..e...',
+      '.........|..|SS|SS|..|..........',
+      '.........|..|SS|SS|..|..........',
+      '...X.....|SS|SS|SS|SS|...s..e...',
       '################################',
       '################################',
       '################################',
@@ -4883,7 +4883,7 @@ let camX = 0, camY = 0;
 
 const P = {
   x: 0, y: 0, w: 12, h: SMALL_H, vx: 0, vy: 0, facing: 1, power: 0, onGround: false,
-  coyote: 0, jumpBuf: 0, spinBuf: 0, spinning: false, duck: false, inv: 0, pm: 0, anim: 0,
+  coyote: 0, jumpBuf: 0, spinBuf: 0, minHold: 0, spinning: false, duck: false, inv: 0, pm: 0, anim: 0,
   carry: null, plat: null, dead: false, skid: false, transform: null, auto: false,
 };
 
@@ -5002,7 +5002,7 @@ function loadLevel() {
   for (const [n, d] of Object.entries(LEVEL.areas)) AREAS[n] = spawnArea(d);
   L = AREAS.main; ents = L.ents; plats = L.plats; parts = []; bumps = [];
   const sp = G.checkpoint || { x: LEVEL.start.tx * T + 2, y: (LEVEL.start.ty + 1) * T };
-  Object.assign(P, { vx: 0, vy: 0, facing: 1, onGround: false, coyote: 0, jumpBuf: 0, spinBuf: 0, spinning: false, duck: false, inv: 0, pm: 0, anim: 0, carry: null, plat: null, dead: false, skid: false, transform: null, auto: false, hidden: false });
+  Object.assign(P, { vx: 0, vy: 0, facing: 1, onGround: false, coyote: 0, jumpBuf: 0, spinBuf: 0, minHold: 0, spinning: false, duck: false, inv: 0, pm: 0, anim: 0, carry: null, plat: null, dead: false, skid: false, transform: null, auto: false, hidden: false });
   P.h = P.power > 0 ? BIG_H : SMALL_H;
   P.x = sp.x; P.y = sp.y - P.h;
   G.time = 300; G.timeTick = 0; G.hurry = false; G.combo = 0; G.freeze = 0; G.clear = null; G.warp = null; G.boss = null;
@@ -5256,17 +5256,20 @@ function updatePlayer() {
 
   // Salto (con margen de reacción y búfer)
   if (!P.auto) {
-    if (inp.jumpP) P.jumpBuf = 6; else if (P.jumpBuf > 0) P.jumpBuf--;
-    if (inp.spinP) P.spinBuf = 6; else if (P.spinBuf > 0) P.spinBuf--;
+    if (inp.jumpP) P.jumpBuf = 8; else if (P.jumpBuf > 0) P.jumpBuf--;
+    if (inp.spinP) P.spinBuf = 8; else if (P.spinBuf > 0) P.spinBuf--;
   }
-  if (onG) P.coyote = 6; else if (P.coyote > 0) P.coyote--;
+  if (onG) P.coyote = 8; else if (P.coyote > 0) P.coyote--;
   if ((P.jumpBuf > 0 || P.spinBuf > 0) && P.coyote > 0 && !P.balloon) {
     const spin = P.spinBuf > 0 && !P.carry;
     P.vy = -(spin ? 4.7 : 5.1) - Math.abs(P.vx) * 0.26;
     P.spinning = spin; P.coyote = 0; P.jumpBuf = 0; P.spinBuf = 0; P.onGround = false; P.plat = null;
+    // con los botones táctiles un toque corto ya da casi el salto entero (como si se mantuviera 16 fotogramas)
+    P.minHold = (touch.jump || touch.spin) ? 16 : 0;
     Sound.play(spin ? 'spin' : 'jump');
   }
-  const holding = inp.jump || (P.spinning && inp.spin);
+  if (P.minHold > 0) P.minHold--;
+  const holding = inp.jump || (P.spinning && inp.spin) || P.minHold > 0;
   if (P.balloon) {
     // colgado de un globo de la feria: sube despacio; ↓ lo suelta
     P.vy = approach(P.vy, -1.2, 0.12);
@@ -5492,7 +5495,7 @@ const UPD = {
   },
   milano(e) {
     // vigila quieto en lo alto; cuando Tizón pasa justo por debajo tiembla y grazna (aviso) y luego
-    // se deja caer en vertical. Basta con apartarse un paso; después se va volando hacia atrás
+    // se deja caer en vertical hasta salir por abajo de la pantalla. Basta con apartarse un paso
     const cx = e.x + e.w / 2, px = P.x + P.w / 2, py = P.y + P.h / 2;
     if (e.st === 'hover') {
       e.y = e.y0 + Math.sin(e.t * 0.08) * 4; e.dir = px < cx ? -1 : 1;
@@ -5502,8 +5505,7 @@ const UPD = {
     } else if (e.st === 'aviso') {
       e.x = e.ax + ((e.timer >> 1) & 1 ? 1 : -1);
       if (++e.timer > 40) { e.x = e.ax; e.vx = 0; e.vy = 2; e.st = 'dive'; e.timer = 0; }
-    } else if (e.st === 'dive') { e.y += e.vy; if (++e.timer > 80) { e.st = 'leave'; e.vx = -1.4; e.dir = -1; } }
-    else { e.vy = Math.max(-2, e.vy - 0.08); e.x += e.vx; e.y += e.vy; if (!onScreen(e, 48)) e.alive = false; }
+    } else if (e.st === 'dive') { e.y += e.vy; if (e.y > camY + VH + 16) e.alive = false; }
   },
   urraca(e) {
     // la Urraca del Teatro Romano: vuela, apunta, se lanza en picado y se queda aturdida en el suelo
@@ -6808,7 +6810,7 @@ function drawHUD() {
 }
 
 // Versión del juego que se ve en la pantalla de inicio (la misma que en Godot)
-const VERSION_JUEGO = '1.0';
+const VERSION_JUEGO = '1.2';
 function drawTitle() {
   if (!L) loadLevel();
   const scroll = G.t * 0.35;
@@ -7064,17 +7066,42 @@ window.addEventListener('touchstart', () => { if (pad.hidden && !pad.dataset.aut
   bindArea(dpad, fromCross, crossAt);
   bindArea(stick, fromStick, stickAt, () => { knob.style.transform = ''; });
 
-  // Botones: X e Y hacen lo mismo, así que se mira si queda alguno pulsado de cada acción
-  const held = new Set();
-  const btns = [...pad.querySelectorAll('button[data-k]'), document.getElementById('pauseBtn')];
-  const sync = () => { for (const k of ['jump', 'run', 'spin', 'start']) touch[k] = [...held].some(b => b.dataset.k === k); for (const b of btns) b.classList.toggle('on', held.has(b)); };
-  for (const b of btns) {
-    const k = b.dataset.k;
-    const on = e => { e.preventDefault(); e.stopPropagation(); Sound.init(); try { b.setPointerCapture(e.pointerId); } catch (_) { } held.add(b); sync(); if (k === 'start' || k === 'jump') G.tap = G.state !== 'play' && G.state !== 'pause' ? true : G.tap; };
-    const off = () => { held.delete(b); sync(); };
-    b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
-    b.addEventListener('contextmenu', e => e.preventDefault());
-  }
+  // Botones: cada dedo pulsa todos los botones que toca y se puede deslizar de uno a otro. Cada
+  // botón se toca en un círculo algo mayor que su dibujo, así que un pulgar puesto entre A y X
+  // (o entre A y B) pulsa los dos, como en un mando: correr y saltar con un solo dedo.
+  // X e Y hacen lo mismo, así que se mira si queda alguno pulsado de cada acción.
+  const zonaBtns = pad.querySelector('.btns'), pausa = document.getElementById('pauseBtn');
+  const btns = [...zonaBtns.querySelectorAll('button[data-k]'), pausa];
+  const dedos = new Map();                                  // dedo → botones que pulsa
+  const sync = () => {
+    const held = new Set(); for (const set of dedos.values()) for (const b of set) held.add(b);
+    for (const k of ['jump', 'run', 'spin', 'start']) touch[k] = [...held].some(b => b.dataset.k === k);
+    for (const b of btns) b.classList.toggle('on', held.has(b));
+  };
+  const tocados = e => {
+    const out = new Set();
+    for (const b of btns) {
+      if (b === pausa) continue;
+      const r = b.getBoundingClientRect();
+      if (Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) <= r.width * 0.76) out.add(b);
+    }
+    return out;
+  };
+  const toque = (id, set) => {
+    const antes = dedos.get(id) || new Set();
+    // al empezar a pulsar saltar (o la pausa) fuera de la partida cuenta como «toque» para los menús
+    for (const b of set) if (!antes.has(b) && (b.dataset.k === 'start' || b.dataset.k === 'jump')) G.tap = G.state !== 'play' && G.state !== 'pause' ? true : G.tap;
+    dedos.set(id, set); sync();
+  };
+  zonaBtns.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); Sound.init(); hideHint(); try { zonaBtns.setPointerCapture(e.pointerId); } catch (_) { } toque(e.pointerId, tocados(e)); });
+  zonaBtns.addEventListener('pointermove', e => { if (dedos.has(e.pointerId)) toque(e.pointerId, tocados(e)); });
+  const suelta = e => { if (dedos.delete(e.pointerId)) sync(); };
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) zonaBtns.addEventListener(ev, suelta);
+  zonaBtns.addEventListener('contextmenu', e => e.preventDefault());
+  // la pausa, aparte (está arriba, fuera de los mandos)
+  pausa.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); Sound.init(); try { pausa.setPointerCapture(e.pointerId); } catch (_) { } toque('pausa' + e.pointerId, new Set([pausa])); });
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) pausa.addEventListener(ev, e => { if (dedos.delete('pausa' + e.pointerId)) sync(); });
+  pausa.addEventListener('contextmenu', e => e.preventDefault());
 
   // Cruceta o joystick (se recuerda en este navegador)
   const btnModo = document.getElementById('btnModo');
@@ -7178,7 +7205,7 @@ function frame(now) {
 requestAnimationFrame(frame);
 
 // Ganchos para pruebas automáticas
-window.GAME = { Save, encodeSave, decodeSave, LEVELS, DBG, step(n) { for (let i = 0; i < (n || 1); i++) update(); render(); }, A, G, P, get ents() { return ents; }, get L() { return L; }, keys, touch, SPRITE_WARN, LEVEL, newGame, loadLevel, setPower, update, render, camera: updateCamera, isSolid, tileAt, isOneWay, get plats() { return plats; } };
+window.GAME = { Save, encodeSave, decodeSave, LEVELS, DBG, step(n) { for (let i = 0; i < (n || 1); i++) update(); render(); }, A, G, P, get ents() { return ents; }, get L() { return L; }, keys, touch, SPRITE_WARN, LEVEL, newGame, loadLevel, setPower, update, render, camera: updateCamera, isSolid, tileAt, isOneWay, switchArea, get plats() { return plats; } };
 
 // ============================================================
 //  ESTADÍSTICAS Y HUEVOS DE PASCUA

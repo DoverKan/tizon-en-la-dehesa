@@ -6,7 +6,7 @@
 #  Qué es:   Mandos táctiles: cruceta o joystick y botones A, B, X e Y
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -15,15 +15,16 @@ extends CanvasLayer
 ## elige en Opciones) y a la derecha cuatro botones en rombo: A salta, B da la
 ## vuelta, X e Y corren. Arriba a la derecha, la pausa. Se ven en el mapa y
 ## mientras se juega, si la pantalla es táctil (o si se fuerzan en Opciones).
-## Admite varios dedos a la vez.
+## Admite varios dedos a la vez. Un dedo en los botones pulsa todos los que toca y se
+## puede deslizar de uno a otro: con el pulgar entre A y X se salta y se corre a la vez.
 
-const CENTRO_IZQ := Vector2(42, 180)
-const RADIO_CRUZ := 30.0          # mitad del lado de la cruceta
-const RADIO_PALANCA := 28.0
-const RECORRIDO_PALANCA := 14.0
-const CENTRO_BOTONES := Vector2(342, 180)
-const SEPARACION := 21.0
-const RADIO_BOTON := 11.0
+const CENTRO_IZQ := Vector2(44, 178)
+const RADIO_CRUZ := 34.0          # mitad del lado de la cruceta
+const RADIO_PALANCA := 32.0
+const RECORRIDO_PALANCA := 16.0
+const CENTRO_BOTONES := Vector2(340, 178)
+const SEPARACION := 25.0
+const RADIO_BOTON := 13.0
 const PAUSA := Rect2(352, 28, 26, 16)
 const BOTONES := {
 	"a": ["saltar", Vector2(0, 1), Color("d9432f")],
@@ -35,7 +36,7 @@ const DIRECCIONES := ["izquierda", "derecha", "arriba", "abajo"]
 
 var principal: Node = null
 var _dibujo: Node2D
-var _dedos := {}                  # índice del dedo -> {"que": "cruz"|"palanca"|"a"|"b"|"x"|"y"|"pausa", "dir": {...}, "pos": Vector2}
+var _dedos := {}                  # índice del dedo -> {"que": "cruz"|"palanca"|"botones"|"pausa", "dir": {...}, "pulsa": [...], "pos": Vector2}
 var _pulsadas := {}               # acciones que mantenemos pulsadas nosotros
 var _forzar := false              # alguien ha tocado la pantalla (modo automático)
 
@@ -89,16 +90,21 @@ func _input(event: InputEvent) -> void:
 func _zona(p: Vector2) -> String:
 	if PAUSA.grow(4).has_point(p):
 		return "pausa"
-	if p.distance_to(CENTRO_IZQ) <= 48.0:
+	if p.distance_to(CENTRO_IZQ) <= 54.0:
 		return "palanca" if Juego.opciones.mando == "joystick" else "cruz"
-	var mejor := ""
-	var dist := RADIO_BOTON + 6.0
+	if not _botones_en(p).is_empty():
+		return "botones"
+	return ""
+
+
+## Botones que toca un dedo en ese punto. Cada botón se toca en un círculo algo mayor que su
+## dibujo, así que entre dos botones vecinos (A y X, A y B...) se pulsan los dos.
+func _botones_en(p: Vector2) -> Array:
+	var out := []
 	for k in BOTONES:
-		var d := p.distance_to(CENTRO_BOTONES + BOTONES[k][1] * SEPARACION)
-		if d <= dist:
-			dist = d
-			mejor = k
-	return mejor
+		if p.distance_to(CENTRO_BOTONES + BOTONES[k][1] * SEPARACION) <= RADIO_BOTON + 7.0:
+			out.append(k)
+	return out
 
 
 ## Direcciones a partir de un vector de -1 a 1; las diagonales solo cerca de los 45°
@@ -122,6 +128,8 @@ func _actualizar_dedo(i: int, p: Vector2) -> void:
 			var v := (p - CENTRO_IZQ).limit_length(RECORRIDO_PALANCA)
 			d.pos = CENTRO_IZQ + v
 			d.dir = _direccion(v / RECORRIDO_PALANCA, 0.35, 0.7)
+		"botones":
+			d.pulsa = _botones_en(p)
 	_aplicar()
 
 
@@ -135,8 +143,10 @@ func _aplicar() -> void:
 						quiero[k] = true
 			"pausa":
 				quiero["pausa"] = true
-			_:
-				quiero[BOTONES[d.que][0]] = true
+			"botones":
+				for k in d.get("pulsa", []):
+					quiero[BOTONES[k][0]] = true
+	Juego.salto_tactil = quiero.has("saltar") or quiero.has("vuelta")
 	for accion in ["izquierda", "derecha", "arriba", "abajo", "saltar", "vuelta", "correr", "pausa"]:
 		var si: bool = quiero.has(accion)
 		if si and not _pulsadas.has(accion):
@@ -149,7 +159,7 @@ func _aplicar() -> void:
 
 func _pulsado(que: String) -> bool:
 	for d in _dedos.values():
-		if d.que == que:
+		if d.que == que or (d.que == "botones" and que in d.get("pulsa", [])):
 			return true
 	return false
 
@@ -172,10 +182,10 @@ func _pintar() -> void:
 		for d in _dedos.values():
 			if d.que == "palanca":
 				pomo = d.pos
-		c.draw_circle(pomo, 11.0, Color(1, 1, 1, 0.75 if _pulsado("palanca") else 0.55))
+		c.draw_circle(pomo, 12.0, Color(1, 1, 1, 0.75 if _pulsado("palanca") else 0.55))
 		c.draw_circle(pomo, 7.0, Color(0.85, 0.85, 0.9, 0.8))
 	else:
-		var b := 11.0
+		var b := 13.0
 		var l := RADIO_CRUZ
 		c.draw_rect(Rect2(CENTRO_IZQ - Vector2(b, l), Vector2(b * 2, l * 2)), oscuro)
 		c.draw_rect(Rect2(CENTRO_IZQ - Vector2(l, b), Vector2(l * 2, b * 2)), oscuro)

@@ -6,7 +6,7 @@
 #  Qué es:   Dibujo de los menús, la ayuda, el bestiario, las opciones, el mapa y la pausa
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.0 (noviembre de 2026)
+#  Versión:  1.2 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 

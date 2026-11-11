@@ -114,7 +114,11 @@ Para verlos con sus datos en los informes, en Analytics: **Administrar > Definic
 
 ## Exportar a PC, Android, iOS y web
 
-La versión que sale abajo a la derecha en la pantalla de inicio está en **Proyecto > Configuración del proyecto > Aplicación > Configuración > Versión** (en la web, en `VERSION_JUEGO`). Al cambiarla, cámbiala también en los preajustes de exportación (versión del archivo en Windows, `version/name` y `version/code` en Android, `short_version` en macOS e iOS).
+La versión que sale abajo a la derecha en la pantalla de inicio está en **Proyecto > Configuración del proyecto > Aplicación > Configuración > Versión** (en la web, en `VERSION_JUEGO`). Se sube en cada versión publicada (1.0, 1.1, 1.2...) y se apunta en **Versiones** del README. Al subirla, cámbiala también en:
+
+- los preajustes de exportación: versión del archivo y del producto en Windows (`1.1.0.0`), `version/name` en Android y `short_version` en macOS e iOS;
+- el número de compilación, que tiene que crecer siempre de uno en uno: `version/code` en Android y `version` en macOS e iOS (la 1.1 es la 2);
+- la línea `Versión:` de la cabecera de cada archivo. En los mapas y en `docs/index.html` se pone sola, porque sale de `VERSION_JUEGO`.
 
 El proyecto trae ya preparados los preajustes de **Proyecto > Exportar** para Windows, Linux, macOS, Android, iOS y Web. Cada uno deja el juego en su carpeta de `exportar/`. El renderizador es **Compatibilidad**, que funciona en todas esas plataformas, y está activada la compresión de texturas ETC2/ASTC que piden Android e iOS.
 

@@ -43,7 +43,7 @@ Además:
 - **Partida guardada** automáticamente al tocar la caseta y al pasar un nivel.
 - **Código de partida** de 21 caracteres para seguir en otro dispositivo. Es el mismo que usa la versión web del juego.
 - **Ranking de jugadores**, el mismo en la web y en la app. Al acabar la partida, si la puntuación entra entre las 20 mejores, se escribe un nombre como en las recreativas. Se puede ver en [doverkan.com/tizon_ranking](https://www.doverkan.com/tizon_ranking/).
-- **Mandos táctiles**: cruceta o joystick, y los botones A, B, X e Y en rombo.
+- **Mandos táctiles**: cruceta o joystick, y los botones A, B, X e Y en rombo. Con el pulgar entre dos botones se pulsan los dos (entre A y X, salto corriendo).
 - Se exporta a **Windows, Linux, macOS, Android, iOS y web**.
 
 | | |
@@ -105,6 +105,19 @@ exportar/     aquí deja Godot los juegos exportados
 docs/         guía de desarrollo, capturas y el juego web (index.html, instalable como aplicación)
 github.bat    menú para subir y descargar los cambios de GitHub (github.ps1)
 ```
+
+## Versiones
+
+- **1.2** (noviembre de 2026)
+  - Móvil y tableta: un dedo puesto entre dos botones pulsa los dos (con el pulgar entre A y X se salta corriendo) y se puede deslizar de un botón a otro. Un toque corto en A ya da casi el salto entero. En la versión de Godot los botones son más grandes.
+  - Para todos: un poco más de margen para saltar justo al salir de un borde o si se pulsa un pelín antes de caer.
+  - MEIAC 2-1, el museo por dentro: hay un interruptor en el suelo, así que quien se cae hasta abajo puede volver a poner el color que necesita y subir otra vez. Los escalones de colores son más anchos y los saltos más cortos.
+  - Cigüeñas 2-4: solo queda un milano, en la escalera de nubes, lejos de las cigüeñas, y después de caer se va por abajo. Las cigüeñas están a la misma altura que la nube desde la que se salta y algunas nubes son más anchas. Se puede pasar entero andando y con toques cortos.
+  - Mérida 2-5: si se cae entre las columnas del teatro siempre se puede salir (el fondo de los huecos es de piedra).
+- **1.1** (noviembre de 2026)
+  - MEIAC 2-1: desde el chorro de los aspersores se puede saltar, y la zanja de los aspersores tiene columnas más bajas, más anchas y más juntas.
+  - Cigüeñas 2-4: más fácil. La pantalla avanza más despacio, las nubes son más anchas y los huecos más cortos. Hay 4 milanos en vez de 7: se quedan quietos en lo alto, avisan temblando y graznando, y solo se dejan caer si Tizón pasa justo por debajo.
+- **1.0** (noviembre de 2026): primera versión publicada.
 
 ## Créditos
 
