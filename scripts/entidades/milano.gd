@@ -3,7 +3,7 @@
 #  Juego de plataformas al estilo de Super Mario World, hecho con Godot 4.
 #
 #  Archivo:  scripts/entidades/milano.gd
-#  Qué es:   Milano: se lanza en picado
+#  Qué es:   Milano: avisa y se deja caer si Tizón pasa por debajo
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
 #  Versión:  1.0 (noviembre de 2026)
@@ -11,10 +11,13 @@
 # ============================================================================
 
 extends Pieza
-## Milano: vigila desde arriba y se lanza en picado hacia Tizón. Se puede pisar.
+## Milano: vigila quieto en lo alto. Cuando Tizón pasa justo por debajo, tiembla y grazna (aviso)
+## y luego se deja caer en vertical: basta con apartarse un paso. Después se va volando hacia
+## atrás. Se puede pisar.
 
-var estado := "vigila"     # vigila, picado, se_va
+var estado := "vigila"     # vigila, aviso, picado, se_va
 var y0 := 0.0
+var x_aviso := 0.0
 var vx := 0.0
 var vy := 0.0
 var reloj := 0
@@ -33,23 +36,32 @@ func paso(_delta: float) -> void:
 	var pc: Vector2 = nivel.jugador.caja().get_center()
 	match estado:
 		"vigila":
-			position.x -= 0.35
 			position.y = y0 + sin(t * 0.08) * 4.0
-			dir = -1
-			if absf(pc.x - c.x) < 80.0 and pc.y > caja().position.y + 10.0:
-				var d := pc - c
-				var l := maxf(d.length(), 1.0)
-				vx = d.x / l * 2.6
-				vy = maxf(1.0, d.y / l * 2.6)
+			dir = -1 if pc.x < c.x else 1
+			# solo si se le ve entero en pantalla
+			var cx: float = nivel.cam.x
+			var dentro: bool = caja().position.x > cx + 8.0 and caja().end.x < cx + nivel.VW - 8.0
+			if absf(pc.x - c.x) < 28.0 and pc.y > caja().position.y + 24.0 and dentro:
+				estado = "aviso"
+				reloj = 0
+				x_aviso = position.x
+				Sonido.tocar("graznido")
+		"aviso":
+			position.x = x_aviso + (1.0 if ((reloj >> 1) & 1) != 0 else -1.0)
+			reloj += 1
+			if reloj > 40:
+				position.x = x_aviso
+				vx = 0.0
+				vy = 2.0
 				estado = "picado"
 				reloj = 0
-				dir = -1 if d.x < 0.0 else 1
-				Sonido.tocar("graznido")
 		"picado":
-			position += Vector2(vx, vy)
+			position.y += vy
 			reloj += 1
-			if reloj > 50:
+			if reloj > 80:
 				estado = "se_va"
+				vx = -1.4
+				dir = -1
 		_:
 			vy = maxf(-2.0, vy - 0.08)
 			position += Vector2(vx, vy)
@@ -59,5 +71,6 @@ func paso(_delta: float) -> void:
 	if estado == "picado":
 		sprite.frame = 2
 	else:
-		sprite.frame = 0 if ((t >> 3) & 1) != 0 else 1
+		var r := 1 if estado == "aviso" else 3
+		sprite.frame = 0 if ((t >> r) & 1) != 0 else 1
 	sprite.flip_h = dir > 0
