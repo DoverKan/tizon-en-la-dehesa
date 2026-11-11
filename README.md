@@ -108,6 +108,8 @@ github.bat    menú para subir y descargar los cambios de GitHub (github.ps1)
 
 ## Versiones
 
+- **1.4** (noviembre de 2026)
+  - Si se acaban las vidas se puede seguir con **Continuar** desde la última caseta o nivel pasado, pero la puntuación vuelve a 0 (y se empieza con 5 vidas).
 - **1.3** (noviembre de 2026)
   - Ranking: sale una sola vez cada jugador, con su mejor puntuación. Si una partida no supera tu récord, el juego te dice en qué puesto sigue tu mejor puntuación.
 - **1.2** (noviembre de 2026)

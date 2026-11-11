@@ -76,7 +76,7 @@ El código de partida tiene sitio para diez niveles: con más, los calcetines de
 
 ## Partida guardada
 
-La partida se guarda sola al tocar la caseta y al pasar un nivel, en `user://partida.json`. Las partidas de la versión anterior (de tres niveles) se convierten solas: quien iba por la Alcazaba sigue por Badajoz y conserva sus calcetines. En la pantalla de inicio:
+La partida se guarda sola al tocar la caseta y al pasar un nivel, en `user://partida.json`. Si se acaban las vidas, se puede seguir desde la partida guardada con **Continuar**, pero con 0 puntos y 5 vidas (así no se suman puntos sin fin para el ranking). Las partidas de la versión anterior (de tres niveles) se convierten solas: quien iba por la Alcazaba sigue por Badajoz y conserva sus calcetines. En la pantalla de inicio:
 
 - **Código de partida** muestra un código de 21 caracteres y permite escribir uno. Es el mismo código que usa la versión web, así que sirve para pasar la partida de un dispositivo a otro, o entre la web y Godot, en los dos sentidos. Los códigos antiguos de 13 y 15 caracteres siguen valiendo.
 - **Empezar de cero** borra la partida guardada (pide confirmación) y empieza en la Dehesa 1-1. La mejor puntuación no se borra.

@@ -6,7 +6,7 @@
 #  Qué es:   Mandos táctiles: cruceta o joystick y botones A, B, X e Y
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.3 (noviembre de 2026)
+#  Versión:  1.4 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 

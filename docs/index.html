@@ -7,7 +7,7 @@
   Autor:    Nacho Cano (DoverKan)
   Código:   https://github.com/DoverKan/tizon-en-la-dehesa
   Jugar:    https://doverkan.github.io/tizon-en-la-dehesa/
-  Versión:  1.3 (noviembre de 2026)
+  Versión:  1.4 (noviembre de 2026)
   © 2026 Nacho Cano
   ============================================================================
 --><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-J0WR95LLC3"></script><script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-J0WR95LLC3');</script><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#16120c"><meta name="description" content="Juego de plataformas con Tizón, un schnauzer mini de Badajoz: de la dehesa al Teatro Romano de Mérida."><link rel="icon" type="image/png" sizes="192x192" href="icono-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Tizón"><script>window.TIZON_RANKING = "https://www.doverkan.com/tizon_ranking/api.php";</script><script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Tizón en la Dehesa</title>
@@ -5945,6 +5945,11 @@ function saveProgress(level, cp) {
   G.furthest = Math.max(G.furthest, level);
   Save.set(sanitizeSave({ v: SAVE_LAYOUT, level, furthest: G.furthest, cp, lives: G.lives, score: G.score, bones: G.bones, power: P.power, socks: G.socksByLevel, t: Date.now(), jugado: Math.floor(G.jugado / 60), cod: G.cod }));
 }
+// Sin vidas: se puede seguir desde la partida guardada, pero quien continúa empieza con 0 puntos
+// (y 5 vidas, como al empezar). Así no se suman puntos sin fin para el ranking.
+function sinVidas() {
+  if (Save.data) Save.set(sanitizeSave({ ...Save.data, score: 0, lives: 5 }));
+}
 function pauseGame() { if (G.state !== 'play') return; G.state = 'pause'; Sound.musicStop(); Sound.play('pause'); }
 function resumeGame() { G.state = 'play'; Sound.play('pause'); Sound.musicStart(G.hurry); }
 
@@ -6024,7 +6029,7 @@ function update() {
       updateParts();
       if (G.timer > 175) {
         G.lives--;
-        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); rankingAlAcabar(false); analitica('fin_partida', { nivel: LEVELS[G.levelIdx].name, puntos: G.score }); }
+        if (G.lives <= 0) { G.state = 'gameover'; G.timer = 0; Sound.play('gameover'); saveBest(); rankingAlAcabar(false); analitica('fin_partida', { nivel: LEVELS[G.levelIdx].name, puntos: G.score }); sinVidas(); }
         else startIntro();
       }
       break;
@@ -6812,7 +6817,7 @@ function drawHUD() {
 }
 
 // Versión del juego que se ve en la pantalla de inicio (la misma que en Godot)
-const VERSION_JUEGO = '1.3';
+const VERSION_JUEGO = '1.4';
 function drawTitle() {
   if (!L) loadLevel();
   const scroll = G.t * 0.35;

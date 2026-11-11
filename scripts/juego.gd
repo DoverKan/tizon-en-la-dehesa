@@ -6,7 +6,7 @@
 #  Qué es:   Estado de la partida (autoload «Juego»): niveles, guardado, código y opciones
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.3 (noviembre de 2026)
+#  Versión:  1.4 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -147,6 +147,16 @@ func _escribir_partida() -> void:
 	var f := FileAccess.open(RUTA_PARTIDA, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(partida))
+
+
+## Se han acabado las vidas: se puede seguir desde la partida guardada, pero quien continúa
+## empieza con 0 puntos (y 5 vidas, como al empezar). Así no se suman puntos sin fin para el ranking.
+func sin_vidas() -> void:
+	if partida == null:
+		return
+	partida.puntos = 0
+	partida.vidas = 5
+	_escribir_partida()
 
 
 ## «Empezar de cero»: borra la partida guardada (el récord se queda).

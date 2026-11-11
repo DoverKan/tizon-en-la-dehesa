@@ -6,7 +6,7 @@
 #  Qué es:   Escena principal: menús, mapa del mundo, presentación de niveles y pausa
 #  Autor:    Nacho Cano (DoverKan)
 #  Código:   https://github.com/DoverKan/tizon-en-la-dehesa
-#  Versión:  1.3 (noviembre de 2026)
+#  Versión:  1.4 (noviembre de 2026)
 #  © 2026 Nacho Cano
 # ============================================================================
 
@@ -397,6 +397,7 @@ func _nivel_perdido() -> void:
 		Juego.guardar_record()
 		Sonido.tocar("fin_partida")
 		ranking.al_acabar(false)
+		Juego.sin_vidas()
 	else:
 		_ir_a_intro()
 
